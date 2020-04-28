@@ -6,7 +6,7 @@ André Kirsch
 
 ### Schnittstellen
 
-- **Bank:**Bezahlen bei der Bank
+- **Bank:** Bezahlen bei der Bank
 - **Parkplatz:** Parkplätze reservieren / Auslastung anzeigen
 - **Bürgerbüro:** Angebote aushängen
 - **Tierarzt, Hausarzt, Fitnesscenter:** Auf Terminkollisionen prüfen
