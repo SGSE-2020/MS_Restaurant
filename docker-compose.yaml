@@ -1,0 +1,29 @@
+version: '3'
+services:
+    frontend:
+        image: "nginx"
+        ports:
+            - 8080:80
+        volumes:
+            - ./client:/usr/share/nginx/html:ro
+    backend:
+        image: "node"
+        ports:
+            - 8081:8081
+            - 50051:50051
+        volumes:
+            - ./server:/app:ro
+        working_dir: /app
+        command: npm start
+        depends_on:
+            - mongo
+        environment:
+            DATABASE_HOSTNAME: mongo
+            DATABASE_PORT: 27017
+            DATABASE_USERNAME: root
+            DATABASE_PASSWORD: 123456
+    mongo:
+        image: "mongo"
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: 123456
