@@ -1,0 +1,16 @@
+syntax = "proto3";
+package restaurants;
+
+service AppointmentCollision {
+	rpc hasAppointmentCollision(CollisionCheckData) returns (Collision) {}
+}
+
+message CollisionCheckData {
+	string uid = 1;
+	datetime time = 2;
+	int32 timespan = 3;
+}
+
+message Collision {
+	bool hasCollision = 1;
+}
