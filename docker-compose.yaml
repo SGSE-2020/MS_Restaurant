@@ -1,29 +1,27 @@
 version: '3'
 services:
     frontend:
-        image: "nginx"
+        build: ./client
         ports:
             - 8080:80
-        volumes:
-            - ./client:/usr/share/nginx/html:ro
     backend:
-        image: "node"
+        build: ./server
         ports:
             - 8081:8081
             - 50051:50051
-        volumes:
-            - ./server:/app:ro
-        working_dir: /app
-        command: npm start
         depends_on:
             - mongo
         environment:
+            DATABASE_NAME: ms_restaurants
             DATABASE_HOSTNAME: mongo
             DATABASE_PORT: 27017
             DATABASE_USERNAME: root
             DATABASE_PASSWORD: 123456
     mongo:
         image: "mongo"
+        volumes:
+            - ./db/data:/data/db:rw
         environment:
             MONGO_INITDB_ROOT_USERNAME: root
             MONGO_INITDB_ROOT_PASSWORD: 123456
+            MONGO_INITDB_DATABASE: ms_restaurants
