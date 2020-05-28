@@ -8,7 +8,7 @@ const GRPC_PORT = 50051
 const DB_URL = 'mongodb://' + process.env.DATABASE_USERNAME + ':' + process.env.DATABASE_PASSWORD + '@'
                + process.env.DATABASE_HOSTNAME + ':' + process.env.DATABASE_PORT + '/' + process.env.DATABASE_NAME
 
-const grpc = new mali(path.resolve(__dirname, './proto/restaurants.proto'), 'RestaurantsService')
+const grpc = new mali(path.resolve(__dirname, './proto/restaurants.proto'), 'AppointmentCollision')
 const rest = express()
 const mongo_client = mongo.MongoClient;
 
@@ -50,6 +50,14 @@ rest.get('/restaurant/:id', (req, res) => {
 rest.get('/restaurant/:id/menu', (req, res) => {
 
 })
+
+function hasAppointmentCollision(ctx) {
+    ctx.res = {
+        "hasCollision": true
+    }
+}
+
+grpc.use({hasAppointmentCollision})
 
 function main() {
     grpc.start('0.0.0.0:' + GRPC_PORT)
