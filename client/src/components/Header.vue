@@ -5,11 +5,14 @@
             <h1>Smart City - Restaurants</h1>
         </div>
         <div class="level-right">
-          <div v-if="!email">
-            <b-button type="is-success" @click.prevent="loginUser()">Login</b-button>
+          <div class="columns" v-if="!user">
+            <b-input class="column" type="email" placeholder="E-Mail" v-model="email"></b-input>
+            <b-input class="column" type="password" placeholder="Passwort" v-model="password"></b-input>
+            <b-button class="button-column" type="is-success" @click.prevent="loginUser()">Login</b-button>
           </div>
-          <div v-if="email">
-            <b-button type="is-success" @click.prevent="logoutUser()">{{email}}</b-button>
+          <div class="columns" v-if="user">
+            <p class="welcome-message column">Willkommen, {{email}}</p>
+            <b-button class="button-column" type="is-success" @click.prevent="logoutUser()">Logout</b-button>
           </div>
         </div>
     </nav>
@@ -21,29 +24,40 @@ import firebase from 'firebase'
 export default {
   data() {
     return {
-      email: null
+      user: null,
+      email: null,
+      password: null,
+      username: null
     }
   },
   created() {
     firebase.auth().onAuthStateChanged((user) => {
-      if (user != null)
+      if (user != null) {
+        this.user = user
         this.email = user.email
-      else
+        this.username = user.displayName
+      } else {
+        this.user = null
         this.email = null
+        this.username = null
+      }
     })
   },
   methods: {
     loginUser() {
-        var email = "exampleuser@test.de";
-        var password = "sgse-ss2020";
+        //var email = "exampleuser@test.de";
+        //var password = "sgse-ss2020";
+        var email = this.email
+        var password = this.password
 
         if(email != undefined && email.length > 0 && password != undefined && password.length > 0){
             firebase.auth().signInWithEmailAndPassword(email, password).then(function(user) {
-                self.email = user.email
+                this.user = user.user
+                this.email = this.user.email
+                this.username = this.user.displayName
                 firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
                     //Token zu Bürgerbüro senden -> Uid zurückbekommen -> Dann User validiert
                     alert("Token ist:" + idToken);
-                    console.log(firebase.auth().currentUser);
                 }).catch(function(error) {
                     console.log(error);
                 });
@@ -82,6 +96,16 @@ export default {
   left: 0px;
   width: 100%;
   z-index: 1;
+}
+
+.button-column {
+  margin: 0.75rem;
+}
+
+.welcome-message {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  color: #42b983;
+  padding-top: 1.125rem;
 }
 
 #restaurants_nav {
