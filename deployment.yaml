@@ -2,23 +2,23 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    app: ms-MSSERVICE
-  name: ms-MSSERVICE
+    app: ms-restaurants
+  name: ms-restaurants
 spec:
   replicas: 1
   strategy: {}
   template:
     metadata:
       labels:
-        app: ms-MSSERVICE
+        app: ms-restaurants
     spec:
       containers:
-      - image: ms-MSSERVICE-frontend
-        name: ms-MSSERVICE-frontend
+      - image: ms-restaurants-frontend
+        name: ms-restaurants-frontend
         ports:
         - containerPort: 80
-      - image: ms-MSSERVICE-backend
-        name: ms-MSSERVICE-backend
+      - image: ms-restaurants-backend
+        name: ms-restaurants-backend
         ports:
         - containerPort: 8080
         - containerPort: 50051
