@@ -26,7 +26,7 @@ env:
   IMAGE_frontend: ms-restaurants-frontend
   IMAGE_backend: ms-restaurants-backend
   REGISTRY_HOSTNAME: gcr.io
-  DEPLOYMENT_NAME: ms-restaurants-frontend
+  DEPLOYMENT_NAME: ms-restaurants
 
 jobs:
   setup-build-publish-deploy:
