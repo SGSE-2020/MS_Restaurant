@@ -3,7 +3,7 @@ const mali = require('mali')
 const express = require('express')
 const mongo = require('mongodb')
 
-const REST_PORT = 8081
+const REST_PORT = 8080
 const GRPC_PORT = 50051
 const DB_URL = 'mongodb://' + process.env.DATABASE_USERNAME + ':' + process.env.DATABASE_PASSWORD + '@'
                + process.env.DATABASE_HOSTNAME + ':' + process.env.DATABASE_PORT + '/' + process.env.DATABASE_NAME
@@ -86,12 +86,6 @@ rest.get('/restaurants', (req, res) => {
             "restaurantID": "45f2xh-d46v421-2an3fh",
             "logo": "",
             "name": "Pizzeria Bolognese",
-            "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est."
-        },
-        {
-            "restaurantID": "jd42xh-124v64d-mu2s3k6",
-            "logo": "",
-            "name": "Tofu Restaurant",
             "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est."
         }
     ])
