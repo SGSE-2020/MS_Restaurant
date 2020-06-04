@@ -1,0 +1,27 @@
+version: '3'
+services:
+    frontend:
+        build: ./frontend
+        ports:
+            - 80:80
+    backend:
+        build: ./backend
+        ports:
+            - 8080:8080
+            - 50051:50051
+        depends_on:
+            - mongo
+        environment:
+            DATABASE_NAME: ms_restaurants
+            DATABASE_HOSTNAME: mongo
+            DATABASE_PORT: 27017
+            DATABASE_USERNAME: root
+            DATABASE_PASSWORD: 123456
+    mongo:
+        image: "mongo"
+        volumes:
+            - ./db/data:/data/db:rw
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: 123456
+            MONGO_INITDB_DATABASE: ms_restaurants

@@ -1,0 +1,18 @@
+syntax = "proto3";
+package restaurants;
+
+import "google/protobuf/timestamp.proto";
+
+service AppointmentCollision {
+	rpc hasAppointmentCollision(CollisionCheckData) returns (Collision) {}
+}
+
+message CollisionCheckData {
+	string uid = 1;
+	Timestamp time = 2;
+	int32 timespan = 3;
+}
+
+message Collision {
+	bool hasCollision = 1;
+}

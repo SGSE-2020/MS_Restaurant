@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: ms-restaurants
+  name: ms-restaurants
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: ms-restaurants
+    spec:
+      containers:
+      - image: ms-restaurants-frontend
+        name: ms-restaurants-frontend
+        ports:
+        - containerPort: 80
+      - image: ms-restaurants-backend
+        name: ms-restaurants-backend
+        ports:
+        - containerPort: 8080
+        - containerPort: 50051
+      restartPolicy: Always
+status: {}

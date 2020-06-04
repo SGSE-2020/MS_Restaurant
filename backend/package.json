@@ -1,0 +1,17 @@
+{
+  "name": "server",
+  "version": "0.0.1",
+  "description": "Backend for the Restaurants Microservice",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "André Kirsch",
+  "license": "ISC",
+  "dependencies": {
+    "@grpc/proto-loader": "^0.5.4",
+    "express": "^4.17.1",
+    "grpc": "^1.24.2",
+    "mali": "^0.20.0"
+  }
+}
