@@ -59,31 +59,31 @@ rest.get('/restaurants', (req, res) => {
             "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est."
         },
         {
-            "restaurantID": "x1a35s-as3d31-b34s34",
+            "restaurantID": "x1a35s-as3d31-b34s35",
             "logo": "",
             "name": "Restaurant Zum Schenkel",
             "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est."
         },
         {
-            "restaurantID": "45f2xh-d46v421-2an3fz",
+            "restaurantID": "45f2xh-d46v421-2an3fa",
             "logo": "",
             "name": "Pizzeria Bolognese",
             "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est."
         },
         {
-            "restaurantID": "jd42xh-124v64d-mu2s3k6",
+            "restaurantID": "jd42xh-124v64d-mu2s3k7",
             "logo": "",
             "name": "Tofu Restaurant",
             "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est."
         },
         {
-            "restaurantID": "x1a35s-as3d31-b34s34",
+            "restaurantID": "x1a35s-as3d31-b34s38",
             "logo": "",
             "name": "Restaurant Zum Schenkel",
             "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est."
         },
         {
-            "restaurantID": "45f2xh-d46v421-2an3fz",
+            "restaurantID": "45f2xh-d46v421-2an3fh",
             "logo": "",
             "name": "Pizzeria Bolognese",
             "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est."

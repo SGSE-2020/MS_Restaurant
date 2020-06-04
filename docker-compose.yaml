@@ -1,11 +1,11 @@
 version: '3'
 services:
     frontend:
-        build: ./client
+        build: ./frontend
         ports:
             - 8080:8080
     backend:
-        build: ./server
+        build: ./backend
         ports:
             - 8081:8081
             - 50051:50051

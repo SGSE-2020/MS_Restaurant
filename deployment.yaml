@@ -2,33 +2,25 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    app: backend
-  name: backend
+    app: ms-MSSERVICE
+  name: ms-MSSERVICE
 spec:
   replicas: 1
   strategy: {}
   template:
     metadata:
       labels:
-        app: backend
+        app: ms-MSSERVICE
     spec:
       containers:
-      - env:
-        - name: DATABASE_HOSTNAME
-          value: mongo
-        - name: DATABASE_NAME
-          value: ms_restaurants
-        - name: DATABASE_PASSWORD
-          value: "123456"
-        - name: DATABASE_PORT
-          value: "27017"
-        - name: DATABASE_USERNAME
-          value: root
-        image: backend
-        name: backend
+      - image: ms-MSSERVICE-frontend
+        name: ms-MSSERVICE-frontend
         ports:
-        - containerPort: 8081
+        - containerPort: 80
+      - image: ms-MSSERVICE-backend
+        name: ms-MSSERVICE-backend
+        ports:
+        - containerPort: 8080
         - containerPort: 50051
-        resources: {}
       restartPolicy: Always
 status: {}

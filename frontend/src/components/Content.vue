@@ -2,9 +2,9 @@
     <div class="content container">
         <h2>Willkommen bei Smart City - Restaurants.</h2>
         <p>Bestellen sie ihre Lieblingsgerichte und reservieren sie Tische direkt online in ihrem Lieblingsrestaurant.</p>
-        <div class="tile is-parent">
-            <div v-for="restaurants_three in restaurants" v-bind:key="restaurants_three" class="tile is-parent">
-                <div v-for="restaurant in restaurants_three" v-bind:key="restaurant.restaurantID" class="tile is-4">
+        <div>
+            <div class="tile is-parent">
+                <div v-for="restaurant in restaurants" v-bind:key="restaurant.restaurantID" class="restaurant-card tile is-4">
                     <div>
                         <img src="restaurant_bg.png" alt="Restaurant Icon">
                         <h3>{{ restaurant.name }}</h3>
@@ -29,10 +29,10 @@ export default {
   },
   created() {
       fetch('http://' + config.url + '/restaurants').then(response => response.json()).then(json => {
-          this.restaurants = []
-          for (var i = 0; i < json.length; i+3) {
+          this.restaurants = json
+          /*for (var i = 0; i < json.length; i+3) {
               this.restaurants.push(json.slice(i, i+3))
-          }
+          }*/
           console.log(this.restaurants)
       })
   }
