@@ -240,7 +240,7 @@ rest.get('/restaurant/:id/menu', (req, res) => {
                     'description': 'Mit Tomate, Käse, Salami, Schinken, Champignons und Paprika'
                 },
                 {
-                    'id': '9',
+                    'id': '11',
                     'name': 'Pizza Gyros',
                     'priceL': 11.95,
                     'priceXL': 14.95,
