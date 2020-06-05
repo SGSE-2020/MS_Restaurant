@@ -1,5 +1,5 @@
 const config = {
-    url: 'localhost:8080'
+    url: 'restaurants.dvess.network/api'
 }
 
 export default config
