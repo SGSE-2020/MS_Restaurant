@@ -7,7 +7,8 @@ COPY . /app
 
 WORKDIR /app
 
-RUN npm rebuild
+RUN npm install && \
+    npm rebuild
 
 ENTRYPOINT ["npm", "start"]
 
