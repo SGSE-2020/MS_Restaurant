@@ -253,7 +253,7 @@ rest.get('/restaurant/:id/menu', (req, res) => {
 })
 
 rest.get('/test', (req, res) => {
-    request('http://www.google.de', (err, res, body) => {
+    request('http://www.google.de', (err, res2, body) => {
         if (err) {
             res.send("Ein Error ist aufgetreten:\n" + err)
         } else {
