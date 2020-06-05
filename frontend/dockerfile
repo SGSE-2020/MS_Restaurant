@@ -2,7 +2,7 @@ FROM node as build-stage
 COPY . /app
 WORKDIR /app
 RUN npm install && \
-    npm install --save buefy buefy/dist/buefy.css firebase && \
+    npm install --save buefy firebase && \
     npm run build
 
 FROM nginx:stable-alpine as production-stage
