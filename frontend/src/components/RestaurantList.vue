@@ -4,13 +4,12 @@
         <p>Bestellen sie ihre Lieblingsgerichte und reservieren sie Tische direkt online in ihrem Lieblingsrestaurant.</p>
         <div>
             <div v-for="restaurants_line in restaurants" v-bind:key="restaurants_line" class="card-line columns">
-                <div v-for="restaurant in restaurants_line" v-bind:key="restaurant.restaurantID" class="restaurant-card colmn">
+                <div v-for="restaurant in restaurants_line" v-bind:key="restaurant.restaurantID" class="restaurant-card column">
                     <div>
                         <img src="restaurant_bg.png" alt="Restaurant Icon">
                         <h3>{{ restaurant.name }}</h3>
                         <p>{{ restaurant.description }}</p>
-                        <b-button class="restaurant-button button-green-bg" @click.prevent="">Ansehen</b-button>
-                        <router-link to="/restaurant">Ansehen</router-link>
+                        <router-link to="/restaurant" class="link">Ansehen</router-link>
                     </div>
                 </div>
             </div>
@@ -30,16 +29,6 @@ export default {
   },
   created() {
       fetch('http://' + config.url + '/restaurants').then(response => response.json()).then(json => {
-          /*this.restaurants = [[], [], []]
-          for (var i = 0; i < json.length; i=i+3) {
-              if (i < json.length)
-                this.restaurants[0].push(json[i])
-              if (i+1 < json.length)
-                this.restaurants[1].push(json[i+1])
-              if (i+2 < json.length)
-                this.restaurants[2].push(json[i+2])
-          }
-          console.log(this.restaurants)*/
           let [...arr] = json
           while(arr.length) {
               this.restaurants.push(arr.splice(0,3))
@@ -51,21 +40,21 @@ export default {
 
 <style scoped>
 .button-green-bg {
-  background-color: #42b983;
-  border-color: transparent;
-  color: #fff;
+    background-color: #42b983;
+    border-color: transparent;
+    color: #fff;
 }
 
 .button-green-bg:hover {
-  background-color: #34af80;
-  border-color: transparent;
-  color: #fff;
+    background-color: #34af80;
+    border-color: transparent;
+    color: #fff;
 }
 
 .button-green-bg:focus {
-  background-color: #42b983;
-  border-color: transparent;
-  color: #fff;
+    background-color: #42b983;
+    border-color: transparent;
+    color: #fff;
 }
 
 .content {
@@ -104,13 +93,27 @@ h2 {
     text-align: left;
 }
 
-.restaurant-card .restaurant-button {
-    width: 100%;
-}
-
 .restaurant-card img {
     width: 100%;
     border-radius: 1rem;
+}
+
+.link {
+    width: 100%;
+    color: #fff;
+    padding-bottom: calc(0.375em - 1px);
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    padding-top: calc(0.375em - 1px);
+    background-color: #42b983;
+    border-width: 1px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.link:hover {
+    color: #fff;
+    background-color: #34af80;
 }
 
 @media (max-width: 768px) {

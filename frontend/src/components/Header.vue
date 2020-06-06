@@ -14,7 +14,7 @@
           <div class="columns" v-if="user">
             <p class="welcome-message column">Willkommen, {{username}}</p>
             <b-button class="button-column button-green-bg" @click.prevent="logoutUser()">Logout</b-button>
-            <b-button class="button-column button-green-bg link-button"><a class="link" href="http://portal.dvess.network">Zum Portal</a></b-button>
+            <a class="link" href="http://portal.dvess.network">Zum Portal</a>
           </div>
         </div>
     </nav>
@@ -164,6 +164,6 @@ img {
 }
 
 @media (max-width: 768px) {
-  
+
 }
 </style>
