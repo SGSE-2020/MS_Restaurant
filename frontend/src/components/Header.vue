@@ -1,18 +1,20 @@
 <template>
     <nav id="restaurants_nav" class="header level">
         <div class="level-left">
-            <img src="melon_48.png" alt="Smart City - Restaurants Logo">
+            <img src="melon_32.png" alt="Smart City - Restaurants Logo">
             <h1>Smart City - Restaurants</h1>
         </div>
         <div class="level-right">
           <div class="columns" v-if="!user">
             <b-input class="column" type="email" placeholder="E-Mail" v-model="email"></b-input>
             <b-input class="column" type="password" placeholder="Passwort" v-model="password"></b-input>
-            <b-button class="button-column" type="is-success" @click.prevent="loginUser()">Login</b-button>
+            <b-button class="button-column button-green-bg" @click.prevent="loginUser()">Login</b-button>
+            <a class="link" href="http://portal.dvess.network">Zum Portal</a>
           </div>
           <div class="columns" v-if="user">
-            <p class="welcome-message column">Willkommen, {{email}}</p>
-            <b-button class="button-column" type="is-success" @click.prevent="logoutUser()">Logout</b-button>
+            <p class="welcome-message column">Willkommen, {{username}}</p>
+            <b-button class="button-column button-green-bg" @click.prevent="logoutUser()">Logout</b-button>
+            <b-button class="button-column button-green-bg link-button"><a class="link" href="http://portal.dvess.network">Zum Portal</a></b-button>
           </div>
         </div>
     </nav>
@@ -90,6 +92,24 @@ export default {
 </script>
 
 <style>
+.button-green-bg {
+  background-color: #42b983;
+  border-color: transparent;
+  color: #fff;
+}
+
+.button-green-bg:hover {
+  background-color: #34af80;
+  border-color: transparent;
+  color: #fff;
+}
+
+.button-green-bg:focus {
+  background-color: #42b983;
+  border-color: transparent;
+  color: #fff;
+}
+
 .header {
   position: fixed;
   top: 0px;
@@ -108,8 +128,26 @@ export default {
   padding-top: 1.125rem;
 }
 
+.link {
+  color: #fff;
+  padding-bottom: calc(0.375em - 1px);
+  padding-left: 0.75em;
+  padding-right: 0.75em;
+  padding-top: calc(0.375em - 1px);
+  background-color: #42b983;
+  border-width: 1px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  margin: 12px;
+}
+
+.link:hover {
+  color: #fff;
+  background-color: #34af80;
+}
+
 #restaurants_nav {
-  padding: 8px 16px;
+  padding: 10px 16px;
   padding-left: 4px;
   background-color: #2c3e50;
 }
@@ -117,11 +155,15 @@ export default {
 h1 {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   color: #42b983;
-  font-weight: 900;
-  font-size: xx-large;
+  font-weight: 800;
+  font-size: x-large;
 }
 
 img {
   margin-right: 12px;
+}
+
+@media (max-width: 768px) {
+  
 }
 </style>

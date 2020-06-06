@@ -9,7 +9,8 @@
                         <img src="restaurant_bg.png" alt="Restaurant Icon">
                         <h3>{{ restaurant.name }}</h3>
                         <p>{{ restaurant.description }}</p>
-                        <b-button class="restaurant-button" type="is-success" @click.prevent="">Ansehen</b-button>
+                        <b-button class="restaurant-button button-green-bg" @click.prevent="">Ansehen</b-button>
+                        <router-link to="/restaurant">Ansehen</router-link>
                     </div>
                 </div>
             </div>
@@ -49,8 +50,26 @@ export default {
 </script>
 
 <style scoped>
+.button-green-bg {
+  background-color: #42b983;
+  border-color: transparent;
+  color: #fff;
+}
+
+.button-green-bg:hover {
+  background-color: #34af80;
+  border-color: transparent;
+  color: #fff;
+}
+
+.button-green-bg:focus {
+  background-color: #42b983;
+  border-color: transparent;
+  color: #fff;
+}
+
 .content {
-    margin-top: 88px;
+    margin-top: 72px;
 }
 
 h2 {
@@ -92,5 +111,21 @@ h2 {
 .restaurant-card img {
     width: 100%;
     border-radius: 1rem;
+}
+
+@media (max-width: 768px) {
+    .restaurant-card {
+        max-width: 100%;
+    }
+
+    .content {
+        margin-top: 224px;
+    }
+}
+
+@media (max-width: 300px) {
+    .content {
+        margin-top: 256px;
+    }
 }
 </style>
