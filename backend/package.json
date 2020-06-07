@@ -4,7 +4,8 @@
   "description": "Backend for the Restaurants Microservice",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "jest --forceExit"
   },
   "author": "André Kirsch",
   "license": "ISC",
@@ -15,5 +16,9 @@
     "mali": "^0.20.0",
     "mongodb": "^3.5.8",
     "request": "^2.88.2"
+  },
+  "devDependencies": {
+    "jest": "^26.0.1",
+    "supertest": "^4.0.2"
   }
 }
