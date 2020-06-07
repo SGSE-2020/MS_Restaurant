@@ -27,8 +27,8 @@
                         Freitag: {{ restaurant_info.openingHours[4].from }}-{{ restaurant_info.openingHours[4].to }} Uhr<br>
                         Samstag: {{ restaurant_info.openingHours[5].from }}-{{ restaurant_info.openingHours[5].to }} Uhr<br>
                         Sonntag: {{ restaurant_info.openingHours[6].from }}-{{ restaurant_info.openingHours[6].to }} Uhr<br>
-                        Aktuell geschlossen
                     </p>
+                    <h5>Beschreibung</h5>
                     <p>{{ restaurant_info.description }}</p>
                 </div>
             </div>

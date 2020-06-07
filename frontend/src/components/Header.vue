@@ -1,7 +1,7 @@
 <template>
     <nav id="restaurants_nav" class="header level">
         <div class="level-left">
-            <img src="melon_32.png" alt="Smart City - Restaurants Logo">
+            <a href="/"><img class="header-logo" src="melon_32.png" alt="Smart City - Restaurants Logo"></a>
             <h1>Smart City - Restaurants</h1>
         </div>
         <div class="level-right">
@@ -92,6 +92,10 @@ export default {
 </script>
 
 <style>
+.header-logo {
+  margin-left: 4px;
+}
+
 .button-green-bg {
   background-color: #42b983;
   border-color: transparent;
