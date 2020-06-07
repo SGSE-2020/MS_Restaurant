@@ -21,7 +21,7 @@
 import config from '../config.js'
 
 export default {
-  name: 'Content',
+  name: 'RestaurantList',
   data() {
       return {
           restaurants: []
@@ -99,6 +99,8 @@ h2 {
 }
 
 .link {
+    margin: 0px;
+    display: block;
     width: 100%;
     color: #fff;
     padding-bottom: calc(0.375em - 1px);

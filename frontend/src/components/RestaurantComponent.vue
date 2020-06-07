@@ -1,15 +1,22 @@
 <template>
     <div class="container content">
         <div class="tile is-ancestor is-vertical">
-            <div class="restaurant-header tile is-12">
-                <img src="restaurant_bg.png" alt="Restaurant Icon">
-                <h4>Restaurant Name</h4>
+            <div class="restaurant-header tile is-12 level">
+                <div class="level-left">
+                    <img src="restaurant_bg.png" alt="Restaurant Icon">
+                    <h4>Restaurant Name</h4>
+                </div>
+                <div>
+                    <b-button class="button-column button-green-bg margin-top-button">Tisch reservieren</b-button>
+                    <b-button class="button-column button-green-bg margin-top-button">Bestellen</b-button>
+                </div>
             </div>
             <div class="restaurant-tile tile is-12">
                 <div class="tile is-child is-8">
                     <Menu />
                 </div>
                 <div class="restaurant-info tile is-child is-4 border-left">
+                    <img src="restaurant_bg.png" alt="Restaurant Icon">
                     <h4>Restaurant Name</h4>
                     <p>
                         Öffnungszeiten:<br>
@@ -36,6 +43,17 @@ export default {
   name: 'RestaurantComponent',
   components: {
     Menu
+  },
+  data() {
+      return {
+          restaurant_id = "1234",
+          restaurant_info: None
+      }
+  },
+  created() {
+      fetch('http://' + config.url + '/restaurant/' + restaurant_id).then(response => response.json()).then(json => {
+          this.restaurant_info = json
+      })
   }
 }
 </script>
@@ -43,30 +61,30 @@ export default {
 <style>
 .restaurant-header {
     background-color: #2c3e50;
-    padding: 12px;
+    padding: 8px;
     border-radius: 1rem;
     margin-bottom: 16px;
 }
 
 .restaurant-header h4 {
-    margin-top: 30px;
-    font-size: xx-large;
+    margin-bottom: 0px;
+    font-size: x-large;
     font-weight: 700;
     color: #42b983;
 }
 
 .restaurant-header img {
-    height: 96px;
+    height: 64px;
     background-color: #2c3e50;
     border-radius: 1rem;
 }
 
-.restaurant-tile {
+.margin-top-button {
+    margin-top: 15px;
 }
 
 .restaurant-info {
     padding: 0 16px;
-    height: 100%;
 }
 
 .restaurant-info h4 {
