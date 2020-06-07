@@ -110,37 +110,30 @@ rest.get('/restaurant/:id', (req, res) => {
         "reservationsAllowed": true,
         "openingHours": [
             {
-                "day": "Monday",
                 "from": "12:00",
                 "to": "21:00"
             },
             {
-                "day": "Tuesday",
                 "from": "12:00",
                 "to": "21:00"
             },
             {
-                "day": "Wednesday",
                 "from": "12:00",
                 "to": "21:00"
             },
             {
-                "day": "Thursday",
                 "from": "12:00",
                 "to": "21:00"
             },
             {
-                "day": "Friday",
                 "from": "12:00",
                 "to": "21:00"
             },
             {
-                "day": "Saturday",
                 "from": "15:00",
                 "to": "24:00"
             },
             {
-                "day": "Sunday",
                 "from": "15:00",
                 "to": "24:00"
             }
