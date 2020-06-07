@@ -2,7 +2,6 @@ const path = require('path')
 const mali = require('mali')
 const express = require('express')
 const mongo = require('mongodb')
-const request = require('request')
 
 const REST_PORT = 8080
 const GRPC_PORT = 50051
@@ -252,16 +251,6 @@ rest.get('/restaurant/:id/menu', (req, res) => {
     ])
 })
 
-rest.get('/test', (req, res) => {
-    request('http://www.google.de', (err, res2, body) => {
-        if (err) {
-            res.send("Ein Error ist aufgetreten:\n" + err)
-        } else {
-            res.send(body)
-        }
-    })
-})
-
 function hasAppointmentCollision(ctx) {
     ctx.res = {
         "hasCollision": true
@@ -279,3 +268,5 @@ function main() {
 }
 
 main()
+
+module.exports = rest

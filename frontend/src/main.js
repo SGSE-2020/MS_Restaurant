@@ -3,6 +3,7 @@ import Buefy from 'buefy'
 import 'buefy/dist/buefy.css'
 import App from './App.vue'
 import firebase from 'firebase'
+import router from './router'
 
 Vue.config.productionTip = false
 
@@ -19,5 +20,6 @@ firebase.initializeApp(config);
 Vue.use(Buefy)
 
 new Vue({
+  router,
   render: h => h(App),
 }).$mount('#app')
