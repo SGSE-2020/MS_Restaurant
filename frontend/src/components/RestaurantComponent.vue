@@ -97,6 +97,8 @@ export default {
 .content {
     margin: 0 auto;
     margin-top: 76px;
+    display: block;
+    height: 100%;
 }
 
 @media (min-width: 769px) {
