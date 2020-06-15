@@ -22,5 +22,16 @@ spec:
         ports:
         - containerPort: 8080
         - containerPort: 50051
+      - image: mongo
+        name: ms-restaurants-db
+        volumeMounts:
+          - mountPath: /data/db
+            name: db
+            subPath: restaurants-db
       restartPolicy: Always
+      volumes:
+        - name: db
+          gcePersistentDisk:
+            pdName: ms-restaurants
+            fsType: ext4
 status: {}
