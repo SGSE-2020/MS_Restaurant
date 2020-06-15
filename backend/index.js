@@ -244,6 +244,10 @@ rest.get('/restaurant/:id/menu', (req, res) => {
     ])
 })
 
+rest.get('/health', (req, res) => {
+    res.send({'health': 'ok'})
+})
+
 function hasAppointmentCollision(ctx) {
     ctx.res = {
         "hasCollision": true
