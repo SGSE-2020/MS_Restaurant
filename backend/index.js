@@ -5,8 +5,9 @@ const mongo = require('mongodb')
 
 const REST_PORT = 8080
 const GRPC_PORT = 50051
-const DB_URL = 'mongodb://' + process.env.DATABASE_USERNAME + ':' + process.env.DATABASE_PASSWORD + '@'
-               + process.env.DATABASE_HOSTNAME + ':' + process.env.DATABASE_PORT + '/' + process.env.DATABASE_NAME
+const DB_URL = 'mongodb://localhost'
+
+const DB_RESTAURANTS = 'restaurants'
 
 const grpc = new mali(path.resolve(__dirname, './proto/restaurants.proto'), 'AppointmentCollision')
 const rest = express()
@@ -19,7 +20,7 @@ function mongo_connect(res, callback) {
             console.error(err)
         }
         else {
-            callback(err, db.db(process.env.DATABASE_NAME))
+            callback(err, db.db('ms-restaurants'))
             db.close()
         }
     })
@@ -28,86 +29,99 @@ function mongo_connect(res, callback) {
 rest.use(express.json())
 
 rest.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*')
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    if (req.hostname == 'localhost') {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    }
+    next()
+})
+
+rest.use('/user', (req, res, next) => {
+    next()
+})
+
+rest.use('/owner', (req, res, next) => {
     next()
 })
 
 rest.get('/restaurants', (req, res) => {
-    /*mongo_connect(res, (err, db) => {
-        db.collection('restaurants').find({}).toArray((err, result) => {
-            res.send(result)
+    mongo_connect(res, (err, db) => {
+        db.collection(DB_RESTAURANTS).find({}).toArray((err, result) => {
+            var result_list = []
+            for(var i of result) {
+                result_list.push({'restaurantID': i.restaurantID, 'logo': i.logo, 'name': i.name, 'description': i.description})
+            }
+            res.send(result_list)
         })
-    })*/
-    res.send([
-        {
-            "restaurantID": "x1a35s-as3d31-b34s34",
-            "logo": "",
-            "name": "Restaurant Zum Schenkel",
-            "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est."
-        },
-        {
-            "restaurantID": "45f2xh-d46v421-2an3fz",
-            "logo": "",
-            "name": "Pizzeria Bolognese",
-            "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est."
-        },
-        {
-            "restaurantID": "jd42xh-124v64d-mu2s3k6",
-            "logo": "",
-            "name": "Tofu Restaurant",
-            "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est."
-        },
-        {
-            "restaurantID": "x1a35s-as3d31-b34s35",
-            "logo": "",
-            "name": "Restaurant Zum Schenkel",
-            "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est."
-        },
-        {
-            "restaurantID": "45f2xh-d46v421-2an3fa",
-            "logo": "",
-            "name": "Pizzeria Bolognese",
-            "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est."
-        },
-        {
-            "restaurantID": "jd42xh-124v64d-mu2s3k7",
-            "logo": "",
-            "name": "Tofu Restaurant",
-            "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est."
-        },
-        {
-            "restaurantID": "x1a35s-as3d31-b34s38",
-            "logo": "",
-            "name": "Restaurant Zum Schenkel",
-            "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est."
-        },
-        {
-            "restaurantID": "45f2xh-d46v421-2an3fh",
-            "logo": "",
-            "name": "Pizzeria Bolognese",
-            "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est."
-        }
-    ])
+    })
 })
 
 rest.get('/restaurant/:id', (req, res) => {
-    /*mongo_connect(res, (err, db) => {
-        db.collection('restaurants').findOne({id: req.params.id}).toArray((err, result) => {
+    mongo_connect(res, (err, db) => {
+        db.collection('restaurants').findOne({restaurantID: req.params.id}, (err, result) => {
             if (err || result == null) {
                 res.status(404).send({'error': 'Restaurant with id ' + req.params.id + ' not found'})
             } else {
+                delete result.orders
+                delete result.tables
+                delete result.menu
+                delete result._id
                 res.send(result)
             }
         })
-    })*/
-    res.send({
+    })
+})
+
+rest.get('/restaurant/:id/menu', (req, res) => {
+    mongo_connect(res, (err, db) => {
+        db.collection('restaurants').findOne({restaurantID: req.params.id}, (err, result) => {
+            if (err || result == null) {
+                res.status(404).send({'error': 'Restaurant with id ' + req.params.id + ' not found'})
+            } else {
+                res.send(result.menu)
+            }
+        })
+    })
+})
+
+rest.get('/setupDB', (req, res) => {
+    restaurant = {
         "restaurantID": "45f2xh-d46v421-2an3fz",
         "logo": "",
         "name": "Pizzeria Bolognese",
         "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est.",
         "ordersAllowed": true,
         "reservationsAllowed": true,
+        "orders": [
+            {
+                "customerID": "123456789-abcdefgh",
+                "dishes": {
+                    'id': '2',
+                    'name': 'Pizza Salami',
+                    'price': 9.95,
+                    'count': 2
+                }
+            }
+        ],
+        "tables": [
+            {
+                "size": 4,
+                "reservations": [
+                    {
+                        "customerID": "123456789-abcdefgh",
+                        "time": "2020-06-30T18:00:00.000Z"
+                    }
+                ]
+            },
+            {
+                "size": 2,
+                "reservations": []
+            },
+            {
+                "size": 2,
+                "reservations": []
+            }
+        ],
         "openingHours": [
             {
                 "from": "12:00",
@@ -137,111 +151,117 @@ rest.get('/restaurant/:id', (req, res) => {
                 "from": "15:00",
                 "to": "24:00"
             }
+        ],
+        "menu": [
+            {
+                'name': "Getränke",
+                'dishes': [
+                    {
+                        'id': '1',
+                        'name': 'Wasser',
+                        'priceL': 2.95,
+                        'priceXL': 3.95,
+                        'description': 'Sprudelndes Quellwasser aus den Alpen.'
+                    },
+                    {
+                        'id': '1a',
+                        'name': 'Stilles Wasser',
+                        'priceL': 1.95,
+                        'priceXL': 2.95,
+                        'description': 'Wasser aus dem Wasserhahn.'
+                    },
+                    {
+                        'id': '2',
+                        'name': 'Coca Cola',
+                        'priceL': 4.95,
+                        'priceXL': 5.95,
+                        'description': ''
+                    },
+                    {
+                        'id': '3',
+                        'name': 'Bier',
+                        'priceL': 5.95,
+                        'priceXL': 7.95,
+                        'description': 'Selbstgebrautes Bier aus dem Keller. Gekühlt.'
+                    }
+                ]
+            },
+            {
+                'name': "Salate",
+                'dishes': [
+                    {
+                        'id': '4',
+                        'name': 'Salatauswahl',
+                        'priceS': 4.95,
+                        'priceL': 8.95,
+                        'priceXL': 12.95,
+                        'description': 'Lassen Sie sich überraschen mit einer Auswahl an feinsten Salaten.'
+                    },
+                    {
+                        'id': '5',
+                        'name': 'Kartoffelsalat',
+                        'priceL': 6.95,
+                        'description': 'Hausgemachter Kartoffelsalat vom Küchenchef.'
+                    }
+                ]
+            },
+            {
+                'name': "Pizza",
+                'dishes': [
+                    {
+                        'id': '6',
+                        'name': 'Pizza Margherita',
+                        'priceL': 7.95,
+                        'priceXL': 9.95,
+                        'description': 'Mit Tomate und Käse'
+                    },
+                    {
+                        'id': '7',
+                        'name': 'Pizza Salami',
+                        'priceL': 9.95,
+                        'priceXL': 11.95,
+                        'description': 'Mit Tomate, Käse und Salami'
+                    },
+                    {
+                        'id': '8',
+                        'name': 'Pizza Prosciutto & Funghi',
+                        'priceL': 10.95,
+                        'priceXL': 12.95,
+                        'description': 'Mit Tomate, Käse, Schinken und Champignons'
+                    },
+                    {
+                        'id': '9',
+                        'name': 'Pizza Tonno',
+                        'priceL': 10.95,
+                        'priceXL': 12.95,
+                        'description': 'Mit Tomate, Käse, Thunfisch und Zwiebeln'
+                    },
+                    {
+                        'id': '10',
+                        'name': 'Pizza Calzone',
+                        'priceL': 10.95,
+                        'description': 'Mit Tomate, Käse, Salami, Schinken, Champignons und Paprika'
+                    },
+                    {
+                        'id': '11',
+                        'name': 'Pizza Gyros',
+                        'priceL': 11.95,
+                        'priceXL': 14.95,
+                        'description': 'Mit Tomate, Käse und Gyros'
+                    }
+                ]
+            }
         ]
+    }
+    mongo_connect(res, (err, db) => {
+        db.collection(DB_RESTAURANTS).insertOne(restaurant, (err, db_res) => {
+            if (err) {
+                res.status(500).send({'error': err})
+            } else {
+                res.send()
+            }
+        })
     })
-})
-
-rest.get('/restaurant/:id/menu', (req, res) => {
-    res.send([
-        {
-            'name': "Getränke",
-            'dishes': [
-                {
-                    'id': '1',
-                    'name': 'Wasser',
-                    'priceL': 2.95,
-                    'priceXL': 3.95,
-                    'description': 'Sprudelndes Quellwasser aus den Alpen.'
-                },
-                {
-                    'id': '1a',
-                    'name': 'Stilles Wasser',
-                    'priceL': 1.95,
-                    'priceXL': 2.95,
-                    'description': 'Wasser aus dem Wasserhahn.'
-                },
-                {
-                    'id': '2',
-                    'name': 'Coca Cola',
-                    'priceL': 4.95,
-                    'priceXL': 5.95,
-                    'description': ''
-                },
-                {
-                    'id': '3',
-                    'name': 'Bier',
-                    'priceL': 5.95,
-                    'priceXL': 7.95,
-                    'description': 'Selbstgebrautes Bier aus dem Keller. Gekühlt.'
-                }
-            ]
-        },
-        {
-            'name': "Salate",
-            'dishes': [
-                {
-                    'id': '4',
-                    'name': 'Salatauswahl',
-                    'priceS': 4.95,
-                    'priceL': 8.95,
-                    'priceXL': 12.95,
-                    'description': 'Lassen Sie sich überraschen mit einer Auswahl an feinsten Salaten.'
-                },
-                {
-                    'id': '5',
-                    'name': 'Kartoffelsalat',
-                    'priceL': 6.95,
-                    'description': 'Hausgemachter Kartoffelsalat vom Küchenchef.'
-                }
-            ]
-        },
-        {
-            'name': "Pizza",
-            'dishes': [
-                {
-                    'id': '6',
-                    'name': 'Pizza Margherita',
-                    'priceL': 7.95,
-                    'priceXL': 9.95,
-                    'description': 'Mit Tomate und Käse'
-                },
-                {
-                    'id': '7',
-                    'name': 'Pizza Salami',
-                    'priceL': 9.95,
-                    'priceXL': 11.95,
-                    'description': 'Mit Tomate, Käse und Salami'
-                },
-                {
-                    'id': '8',
-                    'name': 'Pizza Prosciutto & Funghi',
-                    'priceL': 10.95,
-                    'priceXL': 12.95,
-                    'description': 'Mit Tomate, Käse, Schinken und Champignons'
-                },
-                {
-                    'id': '9',
-                    'name': 'Pizza Tonno',
-                    'priceL': 10.95,
-                    'priceXL': 12.95,
-                    'description': 'Mit Tomate, Käse, Thunfisch und Zwiebeln'
-                },
-                {
-                    'id': '10',
-                    'name': 'Pizza Calzone',
-                    'priceL': 10.95,
-                    'description': 'Mit Tomate, Käse, Salami, Schinken, Champignons und Paprika'
-                },
-                {
-                    'id': '11',
-                    'name': 'Pizza Gyros',
-                    'priceL': 11.95,
-                    'priceXL': 14.95,
-                    'description': 'Mit Tomate, Käse und Gyros'
-                }
-            ]
-        }
-    ])
 })
 
 rest.get('/health', (req, res) => {
