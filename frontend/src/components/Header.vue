@@ -51,7 +51,8 @@ export default {
         var password = this.password
 
         if(email != undefined && email.length > 0 && password != undefined && password.length > 0){
-            firebase.auth().signInWithEmailAndPassword(email, password).then(function(_) {
+            firebase.auth().signInWithEmailAndPassword(email, password).then(function(user) {
+                console.log(user)
                 firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
                     //Token zu Bürgerbüro senden -> Uid zurückbekommen -> Dann User validiert
                     alert("Token ist:" + idToken);
