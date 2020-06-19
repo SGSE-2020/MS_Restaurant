@@ -28,7 +28,7 @@ export default {
       }
   },
   created() {
-      fetch('http://' + config.url + '/restaurants').then(response => response.json()).then(json => {
+      fetch(config.url + '/restaurants').then(response => response.json()).then(json => {
           let [...arr] = json
           while(arr.length) {
               this.restaurants.push(arr.splice(0,3))

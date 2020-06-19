@@ -36,11 +36,7 @@ rest.use((req, res, next) => {
     next()
 })
 
-rest.use('/user', (req, res, next) => {
-    next()
-})
-
-rest.use('/owner', (req, res, next) => {
+rest.use('/my_restaurant', (req, res, next) => {
     next()
 })
 
@@ -84,6 +80,50 @@ rest.get('/restaurant/:id/menu', (req, res) => {
     })
 })
 
+rest.put('/restaurant/:id/order', (req, res) => {
+// https://docs.mongodb.com/manual/reference/operator/update/push/
+})
+
+rest.put('/restaurant/:id/reserve_table', (req, res) => {
+
+})
+
+rest.put('/restaurant/create', (req, res) => {
+
+})
+
+rest.post('/my_restaurant/update', (req, res) => {
+
+})
+
+rest.put('/my_restaurant/menu/item', (req, res) => {
+
+})
+
+rest.post('/my_restaurant/menu/item', (req, res) => {
+    
+})
+
+rest.delete('/my_restaurant/menu/item', (req, res) => {
+    
+})
+
+rest.get('/my_restaurant/orders', (req, res) => {
+    
+})
+
+rest.post('/my_restaurant/order/:id/accept', (req, res) => {
+    
+})
+
+rest.post('/my_restaurant/order/:id/finish', (req, res) => {
+    
+})
+
+rest.put('/my_restaurant/publish_deal', (req, res) => {
+    
+})
+
 rest.get('/setupDB', (req, res) => {
     restaurant = {
         "restaurantID": "45f2xh-d46v421-2an3fz",
@@ -95,12 +135,14 @@ rest.get('/setupDB', (req, res) => {
         "orders": [
             {
                 "customerID": "123456789-abcdefgh",
-                "dishes": {
+                "dishes": [
+                    {
                     'id': '2',
                     'name': 'Pizza Salami',
                     'price': 9.95,
                     'count': 2
-                }
+                    }
+                ]
             }
         ],
         "tables": [
