@@ -46,7 +46,7 @@ export default {
     })
   },
   methods: {
-    loginUser() {
+    loginUser: function() {
         //var email = "exampleuser@test.de";
         //var password = "sgse-ss2020";
         var email = this.email
@@ -55,8 +55,8 @@ export default {
         if(email != undefined && email.length > 0 && password != undefined && password.length > 0){
             firebase.auth().signInWithEmailAndPassword(email, password).then(function(user) {
                 this.user = user.user
-                this.email = this.user.email
-                this.username = this.user.displayName
+                this.email = user.email
+                this.username = user.displayName
                 firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
                     //Token zu Bürgerbüro senden -> Uid zurückbekommen -> Dann User validiert
                     alert("Token ist:" + idToken);
