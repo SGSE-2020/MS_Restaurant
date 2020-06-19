@@ -2,12 +2,30 @@ const path = require('path')
 const mali = require('mali')
 const express = require('express')
 const mongo = require('mongodb')
+const grpc_module = require('grpc')
+const protoLoader = require('@grpc/proto-loader')
+const cookieParser = require('cookie-parser')
 
 const REST_PORT = 8080
 const GRPC_PORT = 50051
 const DB_URL = 'mongodb://localhost'
 
 const DB_RESTAURANTS = 'restaurants'
+
+const USER_PROTO = path.resolve(__dirname, './proto/user.proto')
+const PACKAGE_DEFINITION = protoLoader.loadSync(
+    USER_PROTO,
+    {
+        keepCase: true,
+        longs: String,
+        enums: String,
+        defaults: true,
+        oneofs: true
+    }
+)
+
+const PCKG_DEF_OBJ = grpc_module.loadPackageDefinition(PACKAGE_DEFINITION)
+const user_route = PCKG_DEF_OBJ.user
 
 const grpc = new mali(path.resolve(__dirname, './proto/restaurants.proto'), 'AppointmentCollision')
 const rest = express()
@@ -16,7 +34,7 @@ const mongo_client = mongo.MongoClient;
 function mongo_connect(res, callback) {
     mongo_client.connect(DB_URL, (err, db) => {
         if (err) {
-            res.status(500).send({'error': 'Unable to connect to database.'})
+            res.status(500).send({'error': err})
             console.error(err)
         }
         else {
@@ -26,6 +44,8 @@ function mongo_connect(res, callback) {
     })
 }
 
+rest.use(cookieParser())
+
 rest.use(express.json())
 
 rest.use((req, res, next) => {
@@ -34,6 +54,29 @@ rest.use((req, res, next) => {
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     }
     next()
+})
+
+rest.use('/restaurant', (req, res, next) => {
+    if (res.cookies && res.cookies.uid) {
+        res.status(400).send({'error': 'uid cookie not allowed'})
+    } else {
+        if (req.originalUrl.endsWith('/menu') || req.originalUrl.split('/').length == 3) {
+            next()
+        } else {
+            user_token = {
+                token: req.cookies.token
+            }
+            conn = new user_route.UserService('ms-buergerbuero:50051', grpc_module.credentials.createInsecure())
+            conn.verifyUser(user_token, (err, feature) => {
+                if (err) {
+                    res.status(401).send({'error': err})
+                } else {
+                    res.cookies.uid = feature.uid
+                    next()
+                }
+            })
+        }
+    }
 })
 
 rest.use('/my_restaurant', (req, res, next) => {
