@@ -33,7 +33,7 @@ export default {
     }
   },
   created() {
-    firebase.auth().onAuthStateChanged((user) => {
+    firebase.auth().onAuthStateChanged(function(user) {
       if (user != null) {
         this.user = user
         this.email = user.email
@@ -47,16 +47,11 @@ export default {
   },
   methods: {
     loginUser: function() {
-        //var email = "exampleuser@test.de";
-        //var password = "sgse-ss2020";
         var email = this.email
         var password = this.password
 
         if(email != undefined && email.length > 0 && password != undefined && password.length > 0){
-            firebase.auth().signInWithEmailAndPassword(email, password).then(function(user) {
-                this.user = user.user
-                this.email = user.email
-                this.username = user.displayName
+            firebase.auth().signInWithEmailAndPassword(email, password).then(function(_) {
                 firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
                     //Token zu Bürgerbüro senden -> Uid zurückbekommen -> Dann User validiert
                     alert("Token ist:" + idToken);
