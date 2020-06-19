@@ -131,6 +131,10 @@ rest.put('/restaurant/:id/reserve_table', (req, res) => {
 
 })
 
+rest.get('/restaurant/:id/test', (req, res) => {
+    res.send({'check': req.cookie.uid})
+})
+
 rest.put('/restaurant/create', (req, res) => {
 
 })
