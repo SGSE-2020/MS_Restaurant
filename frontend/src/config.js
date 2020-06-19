@@ -1,5 +1,5 @@
 const config = {
-    url: ''
+    url: '/api'
 }
 
 export default config
