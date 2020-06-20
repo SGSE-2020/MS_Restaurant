@@ -71,9 +71,12 @@ rest.use('/restaurant', (req, res, next) => {
                 if (err) {
                     res.status(401).send({'error': err})
                 } else {
-                    res.send({'status': 'ok', 'feature': feature})
-                    //req.cookies.uid = feature.uid
-                    //next()
+                    if (feature.uid && feature.uid != "") {
+                        req.cookies.uid = feature.uid
+                        next()
+                    } else {
+                        res.status(401).send({'error': 'Benutzerverifizierung fehlgeschlagen'})
+                    }
                 }
             })
         }
