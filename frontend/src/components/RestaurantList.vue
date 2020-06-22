@@ -3,13 +3,13 @@
         <h2>Willkommen bei Smart City - Restaurants.</h2>
         <p>Bestellen sie ihre Lieblingsgerichte und reservieren sie Tische direkt online in ihrem Lieblingsrestaurant.</p>
         <div>
-            <div v-for="restaurants_line in restaurants" v-bind:key="restaurants_line" class="card-line columns">
-                <div v-for="restaurant in restaurants_line" v-bind:key="restaurant.restaurantID" class="restaurant-card column">
+            <div v-for="restaurants_line in restaurants" v-bind:key="restaurants_line.id" class="card-line columns">
+                <div v-for="restaurant in restaurants_line.data" v-bind:key="restaurant.restaurantID" class="restaurant-card column">
                     <div>
                         <img src="restaurant_bg.png" alt="Restaurant Icon">
                         <h3>{{ restaurant.name }}</h3>
                         <p>{{ restaurant.description }}</p>
-                        <router-link to="/restaurant" class="link">Ansehen</router-link>
+                        <router-link :to="{name: 'restaurant', query: {restaurant_id: restaurant.restaurantID}}" class="link">Ansehen</router-link>
                     </div>
                 </div>
             </div>
@@ -30,8 +30,9 @@ export default {
   created() {
       fetch(config.url + '/restaurants').then(response => response.json()).then(json => {
           let [...arr] = json
+          let i = 0
           while(arr.length) {
-              this.restaurants.push(arr.splice(0,3))
+              this.restaurants.push({id: i, data: arr.splice(0,3)})
           }
       })
   }

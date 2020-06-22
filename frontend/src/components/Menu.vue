@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="menu">
         <div class="category_list" v-for="category in menu" v-bind:key="category.name">
             <p class="category_header">{{ category.name }}</p>
             <table>
@@ -34,12 +34,11 @@ export default {
   name: 'Menu',
   data() {
       return {
-          restaurant_id: "45f2xh-d46v421-2an3fz",
-          menu: []
+          menu: null
       }
   },
   created() {
-      fetch(config.url + '/restaurant/' + this.restaurant_id + '/menu').then(response => response.json()).then(json => {
+      fetch(config.url + '/restaurant/' + this.$route.query.restaurant_id + '/menu').then(response => response.json()).then(json => {
           this.menu = json
       })
   }

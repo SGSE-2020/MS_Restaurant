@@ -52,7 +52,7 @@ export default {
       }
   },
   created() {
-      fetch(config.url + '/restaurant/' + this.restaurant_id).then(response => response.json()).then(json => {
+      fetch(config.url + '/restaurant/' + this.$route.query.restaurant_id).then(response => response.json()).then(json => {
           this.restaurant_info = json
       })
   }
