@@ -47,7 +47,7 @@ export default {
   },
   data() {
       return {
-          restaurant_id: "1234",
+          restaurant_id: "45f2xh-d46v421-2an3fz",
           restaurant_info: null
       }
   },
