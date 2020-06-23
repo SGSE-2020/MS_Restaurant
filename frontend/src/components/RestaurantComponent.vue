@@ -2,16 +2,16 @@
     <div class="container content">
         <div class="tile is-ancestor is-vertical">
             <div class="restaurant-header tile is-12 level">
-                <div class="level-left">
+                <div v-if="restaurant_info" class="level-left">
                     <img src="restaurant_bg.png" alt="Restaurant Icon">
                     <h4>{{ restaurant_info.name }}</h4>
                 </div>
                 <div v-if="restaurant_info">
-                    <b-button class="button-column button-green-bg margin-top-button" v-if="restaurant_info.reservationsAllowed">Tisch reservieren</b-button>
-                    <b-button class="button-column button-green-bg margin-top-button" v-if="restaurant_info.ordersAllowed">Bestellen</b-button>
+                    <b-button class="button-column button-green-bg margin-top-button" v-if="restaurant_info.reservationsAllowed">Tisch reservieren</b-button>                    
+                    <router-link :to="{name: 'order', query: {restaurant_id: restaurant_info.restaurantID}}"><b-button class="button-column button-green-bg margin-top-button" v-if="restaurant_info.ordersAllowed">Bestellen</b-button></router-link>
                 </div>
             </div>
-            <div class="restaurant-tile tile is-12">
+            <div v-if="restaurant_info" class="restaurant-tile tile is-12">
                 <div class="tile is-child is-8">
                     <Menu />
                 </div>
