@@ -3,6 +3,7 @@ import Router from 'vue-router'
 
 import Home from './views/Home.vue'
 import Restaurant from './views/Restaurant.vue'
+import Order from './views/Order.vue'
 
 Vue.use(Router)
 
@@ -21,6 +22,11 @@ const router = new Router({
             path: '/restaurant',
             name: 'restaurant',
             component: Restaurant
+        },
+        {
+            path:'/order',
+            name: 'order',
+            component: Order
         }
     ]
 })

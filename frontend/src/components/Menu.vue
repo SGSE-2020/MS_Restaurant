@@ -1,5 +1,6 @@
 <template>
     <div v-if="menu">
+        <h1>Speisekarte</h1>
         <div class="category_list" v-for="category in menu" v-bind:key="category.name">
             <p class="category_header">{{ category.name }}</p>
             <table>
@@ -58,5 +59,9 @@ export default {
 .category_list {
     margin-right: 8px;
     margin-bottom: 32px;
+}
+
+h1 {
+    color: #42b983;
 }
 </style>
