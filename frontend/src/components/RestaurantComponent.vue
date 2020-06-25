@@ -7,7 +7,7 @@
                     <h4>{{ restaurant_info.name }}</h4>
                 </div>
                 <div v-if="restaurant_info">
-                    <b-button class="button-column button-green-bg margin-top-button" v-if="restaurant_info.reservationsAllowed">Tisch reservieren</b-button>                    
+                    <router-link :to="{name: 'reservate', query: {restaurant_id: restaurant_info.restaurantID}}"><b-button class="button-column button-green-bg margin-top-button" v-if="restaurant_info.reservationsAllowed">Tisch reservieren</b-button>    </router-link>                
                     <router-link :to="{name: 'order', query: {restaurant_id: restaurant_info.restaurantID}}"><b-button class="button-column button-green-bg margin-top-button" v-if="restaurant_info.ordersAllowed">Bestellen</b-button></router-link>
                 </div>
             </div>

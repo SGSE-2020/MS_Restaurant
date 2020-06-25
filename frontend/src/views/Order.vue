@@ -42,7 +42,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="restaurant-info tile is-child is-4 border-left">
+                <div v-if="restaurant_info" class="restaurant-info tile is-child is-4 border-left">
                     <h1>Bestellliste</h1>
                     <p v-if="orderList.length == 0 && restaurant_info.ordersAllowed">Füge deiner Bestellliste Gerichte hinzu.</p>
                     <div v-for="order in orderList" v-bind:key="order.id" class="order-item border-bottom level">
@@ -50,7 +50,7 @@
                             <p class="no-margin">{{ order.dish.id }}: {{ order.dish.name }} - {{ order.price }} €</p>
                         </div>
                         <div>
-                            <button class="order-button button is-small button-column button-green-bg margin-top-button">Entfernen</button>
+                            <button class="order-button button is-small button-column button-green-bg margin-top-button" @click.prevent="removeOrder(order.id)">Entfernen</button>
                         </div>
                     </div>
                     <div class="level">
@@ -99,6 +99,18 @@ export default {
     methods: {
         addDish(dish, price) {
             this.orderList.push({id: uuidv4(), dish: dish, price: price})
+        },
+
+        removeOrder(order_id) {
+            var order = null
+            for (var i in this.orderList) {
+                if (this.orderList[i].id == order_id) {
+                    order = i
+                }
+            }
+            if (order) {
+                this.orderList.splice(order, 1)
+            }
         }
     },
     created() {
