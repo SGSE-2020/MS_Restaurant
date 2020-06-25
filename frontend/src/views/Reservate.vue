@@ -17,7 +17,7 @@
                         <h1>Tisch reservieren</h1>
                         <div class="field">
                             <label class="label">Zeitpunkt</label>
-                            <div class="tile is-parent input-merge">
+                            <div class="tile">
                                 <input class="input tile is-8" type="date">
                                 <input class="input tile is-4" type="time">
                             </div>
@@ -105,10 +105,6 @@ export default {
     max-width: 768px;
     margin: 0 auto;
     min-width: 300px;
-}
-
-.input-merge {
-    padding: 0;
 }
 
 @media (min-width: 769px) {
