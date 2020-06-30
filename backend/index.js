@@ -184,11 +184,11 @@ rest.post('/restaurant/:id/order', (req, res) => {
                                 res.status(401).send({'error': err})
                             } else {
                                 transfer_data = {
-                                    user_id = req.params.id,
-                                    iban = feature.iban,
-                                    purpose = 'Bezahlung der Restaurantbestellung',
-                                    dest_iban = feature_owner.iban,
-                                    amount = price.toFixed(2)
+                                    user_id: req.params.id,
+                                    iban: feature.iban,
+                                    purpose: 'Bezahlung der Restaurantbestellung',
+                                    dest_iban: feature_owner.iban,
+                                    amount: price.toFixed(2)
                                 }
                                 conn.getIban(transfer_data, (err, feature_transfer) => {
                                     if (err) {
@@ -224,8 +224,8 @@ rest.post('/restaurant/:id/order', (req, res) => {
     res.send({"price": price})
 })
 
-rest.post('/restaurant/:id/reserve_table', (req, res) => {
-
+rest.post('/restaurant/:id/reservate', (req, res) => {
+    res.send({'status': 'ok'})
 })
 
 rest.get('/restaurant/:id/test', (req, res) => {
