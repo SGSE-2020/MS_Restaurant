@@ -130,15 +130,20 @@ export default {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',
-                credentials: 'same-origin',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 redirect: 'follow',
                 referrerPolicy: 'no-referrer',
                 body: JSON.stringify(order)
-            }).then(response => response.json()).then(() => {
-                router.push({'name': 'restaurant', query: {restaurant_id: this.$route.query.restaurant_id, order: true}})
+            }).then(response => response.json()).then((json) => {
+                if (json.error) {
+                    console.log(json.error)
+                    this.error_msg = "Es ist ein Fehler bei der Reservierung aufgetreten."
+                } else {
+                    router.push({'name': 'restaurant', query: {restaurant_id: this.$route.query.restaurant_id, order: true}})
+                }
             }).catch((err) => {
                 console.log(err)
                 this.error_msg = "Es ist ein Fehler bei der Bestellung aufgetreten."
