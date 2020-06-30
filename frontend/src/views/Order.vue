@@ -132,6 +132,7 @@ export default {
                 cache: 'no-cache',
                 credentials: 'include',
                 headers: {
+                    'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
                 redirect: 'follow',
