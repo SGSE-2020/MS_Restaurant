@@ -126,22 +126,23 @@ export default {
                 "orders": this.orderList,
                 "note": this.note
             }
-        fetch(config.url + '/restaurant/' + this.$route.query.restaurant_id + '/order', {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            redirect: 'follow',
-            referrerPolicy: 'no-referrer',
-            body: JSON.stringify(order)
-        }).then(response => response.json()).then(() => {
-            router.push({'name': 'restaurant', query: {restaurant_id: this.$route.query.restaurant_id, order: true}})
-        }).catch(() => {
-            this.error_msg = "Es ist ein Fehler bei der Bestellung aufgetreten."
-        })
+            fetch(config.url + '/restaurant/' + this.$route.query.restaurant_id + '/order', {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                redirect: 'follow',
+                referrerPolicy: 'no-referrer',
+                body: JSON.stringify(order)
+            }).then(response => response.json()).then(() => {
+                router.push({'name': 'restaurant', query: {restaurant_id: this.$route.query.restaurant_id, order: true}})
+            }).catch((err) => {
+                console.log(err)
+                this.error_msg = "Es ist ein Fehler bei der Bestellung aufgetreten."
+            })
         }
     },
     created() {

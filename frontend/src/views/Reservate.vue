@@ -31,7 +31,7 @@
                             <textarea class="textarea" rows="2" v-model="note"></textarea>
                         </div>
                         <p class="has-text-danger">{{ error_msg }}</p>
-                        <b-button v-if="restaurant_info.reservationsAllowed" class="button button-green-bg margin-top-button level-right">Tisch reservieren</b-button>
+                        <b-button v-if="restaurant_info.reservationsAllowed" class="button button-green-bg margin-top-button level-right" @click.prevent="reservate()">Tisch reservieren</b-button>
                     </form>
                 </div>
             </div>
@@ -42,6 +42,7 @@
 <script>
 import Header from '../components/Header.vue'
 import config from '../config.js'
+import router from '../router'
 
 export default {
     name: 'Reservate',
@@ -56,6 +57,32 @@ export default {
             time: null,
             person_count: 0,
             error_msg: ""
+        }
+    },
+    methods: {
+        reservate() {
+            fetch(config.url + '/restaurant/' + this.$route.query.restaurant_id + '/reservate', {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                redirect: 'follow',
+                referrerPolicy: 'no-referrer',
+                body: JSON.stringify({
+                    note: this.note,
+                    date: this.date,
+                    time: this.time,
+                    person_count: this.person_count
+                })
+            }).then(response => response.json()).then(() => {
+                router.push({'name': 'restaurant', query: {restaurant_id: this.$route.query.restaurant_id, reservation: true}})
+            }).catch((err) => {
+                console.log(err)
+                this.error_msg = "Es ist ein Fehler bei der Reservierung aufgetreten."
+            })
         }
     },
     created() {
