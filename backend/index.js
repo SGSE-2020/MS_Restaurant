@@ -137,9 +137,16 @@ rest.get('/db', (req, res) => {
     })
 })
 
+rest.delete('/removedb', (req, res) => {
+    mongo_connect(res, (err, db) => {
+        db.collection(DB_RESTAURANTS).remove()
+        res.send()
+    })
+})
+
 rest.get('/restaurant/:id', (req, res) => {
     mongo_connect(res, (err, db) => {
-        db.collection('restaurants').findOne({restaurantID: req.params.id}, (err, result) => {
+        db.collection(DB_RESTAURANTS).findOne({restaurantID: req.params.id}, (err, result) => {
             if (err || result == null) {
                 res.status(404).send({'error': 'Restaurant with id ' + req.params.id + ' not found'})
             } else {
@@ -155,7 +162,7 @@ rest.get('/restaurant/:id', (req, res) => {
 
 rest.get('/restaurant/:id/menu', (req, res) => {
     mongo_connect(res, (err, db) => {
-        db.collection('restaurants').findOne({restaurantID: req.params.id}, (err, result) => {
+        db.collection(DB_RESTAURANTS).findOne({restaurantID: req.params.id}, (err, result) => {
             if (err || result == null) {
                 res.status(404).send({'error': 'Restaurant with id ' + req.params.id + ' not found'})
             } else {
@@ -179,7 +186,7 @@ rest.post('/restaurant/:id/order', (req, res) => {
             res.status(401).send({'error': err})
         } else {
             mongo_connect(res, (err, db) => {
-                db.collection('restaurants').findOne({restaurantID: req.params.id}, (err, result) => {
+                db.collection(DB_RESTAURANTS).findOne({restaurantID: req.params.id}, (err, result) => {
                     if (err || result == null) {
                         res.status(404).send({'error': 'Restaurant with id ' + req.params.id + ' not found'})
                     } else {
@@ -204,8 +211,9 @@ rest.post('/restaurant/:id/order', (req, res) => {
                                         if (feature_transfer.status == '200') {
                                             order_data = req.body
                                             order_data.id = uuidv4()
+                                            order_data.uid = req.cookies.uid
                                             mongo_connect(res, (err, db) => {
-                                                db.collection('restaurants').updateOne(
+                                                db.collection(DB_RESTAURANTS).updateOne(
                                                     {
                                                         restaurantID: req.params.id
                                                     },
@@ -232,22 +240,86 @@ rest.post('/restaurant/:id/order', (req, res) => {
 })
 
 rest.post('/restaurant/:id/reservate', (req, res) => {
-    res.send({'status': 'ok'})
     mongo_connect(res, (err, db) => {
-        db.collection('restaurants').findOne({restaurantID: req.params.id}, (err, result) => {
+        db.collection(DB_RESTAURANTS).findOne({restaurantID: req.params.id}, (err, result) => {
             if (err || result == null) {
-                res.status(404).send({'error': 'Restaurant with id ' + req.params.id + ' not found'})
+                res.status(404).send({'error': 'Restaurant with id ' + req.params.id + ' does not have a table with size ' + req.body.person_count})
             } else {
+                var size_count = 0
                 for (var table of result.tables) {
-                    if (table.size == req.body.person_count) {
-                        occupied = false
-                        for (var reservation of table.reservations) {
-                            if (reservation.date != req.body.date) {
-                                
+                    if (table.size >= req.body.person_count) {
+                        size_count += table.count
+                    }
+                }
+                var occupied = 0
+                for (var reservation of result.reservations) {
+                    if (reservation.person_count >= req.body.person_count) {
+                        if (reservation.date == req.body.date) {
+                            var hour = req.body.time.split(':')[0]
+                            if (reservation.time.startsWith(hour)
+                            || reservation.time.startsWith((parseInt(hour) + 1).toString())
+                            || reservation.time.startsWith((parseInt(hour) + 2).toString())) {
+                                occupied += 1
                             }
                         }
                     }
                 }
+                if (occupied < size_count) {
+                    inserted = true
+                    mongo_connect(res, (err, db) => {
+                        new_reservation = req.body
+                        new_reservation.id = uuidv4()
+                        new_reservation.uid = req.cookies.uid
+                        db.collection(DB_RESTAURANTS).updateOne(
+                            {
+                                restaurantID: req.params.id
+                            },
+                            {
+                                $addToSet:{'reservations': new_reservation}
+                            }
+                        )
+                        res.send({'status': 'ok'})
+                    })
+                } else {
+                    res.send({'error': 'Alle möglichen Tische sind bereits belegt'})
+                }
+                /*var inserted = false
+                for (var table of result.tables) {
+                    if (!inserted && table.size == req.body.person_count) {
+                        var occupied = false
+                        for (var reservation of table.reservations) {
+                            if (reservation.date != req.body.date) {
+                                var hour = req.body.time.split(':')
+                                if (reservation.time.startsWith(hour)
+                                || reservation.time.startsWith((parseInt(hour) + 1).toString())
+                                || reservation.time.startsWith((parseInt(hour) + 2).toString())) {
+                                    occupied = true
+                                }
+                            }
+                        }
+                        if (!occupied) {
+                            inserted = true
+                            mongo_connect(res, (err, db) => {
+                                new_reservation = req.body
+                                new_reservation.id = uuidv4()
+                                new_reservation.uid = req.cookies.uid
+                                db.collection(DB_RESTAURANTS).updateOne(
+                                    {
+                                        restaurantID: req.params.id, 
+                                        "tables.$.id": table.id,
+                                    },
+                                    {
+                                        $addToSet:{'tables.$.reservations': req.body}
+                                    }
+                                )
+                                res.send({'status': 'ok'})
+                            })
+                        }
+                    }
+                }
+                if (!inserted) {
+                    res.status(400).send({'err': 'Unable to reservate a table'})
+                }*/
             }
         })
     })
@@ -311,8 +383,9 @@ rest.get('/setupDB', (req, res) => {
                 ]
             }
         ],
-        "tables": [
+        /*"tables": [
             {
+                "id": 0,
                 "size": 4,
                 "reservations": [
                     {
@@ -322,13 +395,28 @@ rest.get('/setupDB', (req, res) => {
                 ]
             },
             {
+                "id": 1,
                 "size": 2,
                 "reservations": []
             },
             {
+                "id": 2,
                 "size": 2,
                 "reservations": []
             }
+        ],*/
+        "tables": [
+            {
+                "size": 4,
+                "count": 1
+            },
+            {
+                "size": 2,
+                "count": 2
+            }
+        ],
+        "reservations": [
+
         ],
         "openingHours": [
             {
