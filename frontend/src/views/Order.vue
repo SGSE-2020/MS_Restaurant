@@ -53,9 +53,14 @@
                             <button class="order-button button is-small button-column button-green-bg margin-top-button" @click.prevent="removeOrder(order.id)">Entfernen</button>
                         </div>
                     </div>
+                    <div v-if="orderList.length > 0 && restaurant_info.ordersAllowed" class="note field">
+                        <label class="label">Anmerkung</label>
+                        <textarea class="textarea" rows="2" v-model="note"></textarea>
+                    </div>
+                    <p class="has-text-danger">{{ error_msg }}</p>
                     <div class="level">
                         <p v-if="orderList.length > 0 && restaurant_info.ordersAllowed" class="overallCost level-left">Gesamtpreis: {{ overallPrice }} €</p>
-                        <b-button v-if="orderList.length > 0 && restaurant_info.ordersAllowed" class="button button-green-bg margin-top-button level-right">Bestellen</b-button>
+                        <b-button v-if="orderList.length > 0 && restaurant_info.ordersAllowed" class="button button-green-bg margin-top-button level-right" @click.prevent="order()">Bestellen</b-button>
                     </div>
                 </div>
             </div>
@@ -67,6 +72,7 @@
 <script>
 import Header from '../components/Header.vue'
 import config from '../config.js'
+import router from '../router'
 
 function uuidv4() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -84,7 +90,9 @@ export default {
         return {
             restaurant_info: null,
             menu: null,
-            orderList: []
+            orderList: [],
+            note: "",
+            error_msg: ""
         }
     },
     computed: {
@@ -111,6 +119,29 @@ export default {
             if (order) {
                 this.orderList.splice(order, 1)
             }
+        },
+
+        order() {
+            var order = {
+                "orders": this.orderList,
+                "note": this.note
+            }
+        fetch(config.url + '/restaurant/' + this.$route.query.restaurant_id + '/order', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer',
+            body: JSON.stringify(order)
+        }).then(response => response.json()).then(() => {
+            router.push({'name': 'restaurant', query: {restaurant_id: this.$route.query.restaurant_id, order: true}})
+        }).catch(() => {
+            this.error_msg = "Es ist ein Fehler bei der Bestellung aufgetreten."
+        })
         }
     },
     created() {
@@ -196,6 +227,10 @@ export default {
 
 .overallCost {
     margin-top: 16px;
+}
+
+.note {
+    margin-top: 32px;
 }
 
 @media (min-width: 769px) {
