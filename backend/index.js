@@ -109,6 +109,38 @@ rest.use('/restaurant', (req, res, next) => {
     }
 })
 
+rest.use('/restaurants', (req, res, next) => {
+    if (res.cookies && res.cookies.uid) {
+        res.status(400).send({'error': 'uid cookie not allowed'})
+    } else {
+        if (req.originalUrl == '/restaurants/isowner') {
+            if (req.hostname == 'localhost') {
+                req.cookies.uid = "TBOsX50VgedWgaAtNUc1Ic1CXGH2"
+                next()
+            } else {
+                user_token = {
+                    token: req.cookies.token
+                }
+                conn = new user_route.UserService('ms-buergerbuero:50051', grpc_module.credentials.createInsecure())
+                conn.verifyUser(user_token, (err, feature) => {
+                    if (err) {
+                        res.status(401).send({'error': err})
+                    } else {
+                        if (feature.uid && feature.uid != "") {
+                            req.cookies.uid = feature.uid
+                            next()
+                        } else {
+                            res.status(401).send({'error': 'Benutzerverifizierung fehlgeschlagen'})
+                        }
+                    }
+                })
+            }
+        } else {
+            next()
+        }
+    }
+})
+
 rest.use('/restaurant/admin', (req, res, next) => {
     if (res.cookies && res.cookies.restaurant_id) {
         res.status(400).send({'error': 'restaurant_id cookie not allowed'})
@@ -283,43 +315,20 @@ rest.post('/restaurant/:id/reservate', (req, res) => {
                 } else {
                     res.send({'error': 'Alle möglichen Tische sind bereits belegt'})
                 }
-                /*var inserted = false
-                for (var table of result.tables) {
-                    if (!inserted && table.size == req.body.person_count) {
-                        var occupied = false
-                        for (var reservation of table.reservations) {
-                            if (reservation.date != req.body.date) {
-                                var hour = req.body.time.split(':')
-                                if (reservation.time.startsWith(hour)
-                                || reservation.time.startsWith((parseInt(hour) + 1).toString())
-                                || reservation.time.startsWith((parseInt(hour) + 2).toString())) {
-                                    occupied = true
-                                }
-                            }
-                        }
-                        if (!occupied) {
-                            inserted = true
-                            mongo_connect(res, (err, db) => {
-                                new_reservation = req.body
-                                new_reservation.id = uuidv4()
-                                new_reservation.uid = req.cookies.uid
-                                db.collection(DB_RESTAURANTS).updateOne(
-                                    {
-                                        restaurantID: req.params.id, 
-                                        "tables.$.id": table.id,
-                                    },
-                                    {
-                                        $addToSet:{'tables.$.reservations': req.body}
-                                    }
-                                )
-                                res.send({'status': 'ok'})
-                            })
-                        }
-                    }
-                }
-                if (!inserted) {
-                    res.status(400).send({'err': 'Unable to reservate a table'})
-                }*/
+            }
+        })
+    })
+})
+
+rest.get('/restaurants/isowner', (req, res) => {
+    mongo_connect(res, (err, db) => {
+        db.collection(DB_RESTAURANTS).findOne({owner: req.cookies.uid}, (err, result) => {
+            if (err) {
+                res.status(404).send({'error': 'Unable to check the possession of a restaurant'})
+            } else if (result == null) {
+                res.send({'owner': false})
+            } else {
+                res.send({'owner': true})
             }
         })
     })
@@ -383,28 +392,6 @@ rest.get('/setupDB', (req, res) => {
                 ]
             }
         ],
-        /*"tables": [
-            {
-                "id": 0,
-                "size": 4,
-                "reservations": [
-                    {
-                        "customerID": "123456789-abcdefgh",
-                        "time": "2020-06-30T18:00:00.000Z"
-                    }
-                ]
-            },
-            {
-                "id": 1,
-                "size": 2,
-                "reservations": []
-            },
-            {
-                "id": 2,
-                "size": 2,
-                "reservations": []
-            }
-        ],*/
         "tables": [
             {
                 "size": 4,
