@@ -21,21 +21,21 @@
 import config from '../config.js'
 
 export default {
-  name: 'RestaurantList',
-  data() {
-      return {
-          restaurants: []
-      }
-  },
-  created() {
-      fetch(config.url + '/restaurants').then(response => response.json()).then(json => {
-          let [...arr] = json
-          let i = 0
-          while(arr.length) {
-              this.restaurants.push({id: i, data: arr.splice(0,3)})
-          }
-      })
-  }
+    name: 'RestaurantList',
+    data() {
+        return {
+            restaurants: []
+        }
+    },
+    created() {
+        fetch(config.url + '/restaurants').then(response => response.json()).then(json => {
+            let [...arr] = json
+            let i = 0
+            while(arr.length) {
+                this.restaurants.push({id: i, data: arr.splice(0,3)})
+            }
+        })
+    }
 }
 </script>
 

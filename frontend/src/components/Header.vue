@@ -9,11 +9,15 @@
                 <b-input class="column" type="email" placeholder="E-Mail" v-model="email"></b-input>
                 <b-input class="column" type="password" placeholder="Passwort" v-model="password"></b-input>
                 <b-button class="button-column button-green-bg" @click.prevent="loginUser()">Login</b-button>
+                <b-button v-if="user && isowner" class="button-column button-green-bg">Mein Restaurant</b-button>
+                <b-button v-if="user && !isowner" class="button-column button-green-bg">Restaurant erstellen</b-button>
                 <a class="link" href="http://portal.dvess.network">Zum Portal</a>
             </div>
             <div class="columns" v-if="user">
                 <p class="welcome-message column">Willkommen, {{username}}</p>
                 <b-button class="button-column button-green-bg" @click.prevent="logoutUser()">Logout</b-button>
+                <b-button v-if="user && isowner" class="button-column button-green-bg">Mein Restaurant</b-button>
+                <b-button v-if="user && !isowner" class="button-column button-green-bg">Restaurant erstellen</b-button>
                 <a class="link" href="http://portal.dvess.network">Zum Portal</a>
             </div>
         </div>
@@ -22,6 +26,7 @@
 
 <script>
 import firebase from 'firebase'
+import config from '../config.js'
 
 export default {
     data() {
@@ -29,7 +34,8 @@ export default {
             user: null,
             email: null,
             password: null,
-            username: null
+            username: null,
+            isowner: false
         }
     },
     created() {
@@ -44,6 +50,9 @@ export default {
                 this.username = null
                 document.cookie = 'token=;'
             }
+        })
+        fetch(config.url + '/restaurants/isowner').then(response => response.json()).then(json => {
+            this.isowner = json.owner
         })
     },
     methods: {
