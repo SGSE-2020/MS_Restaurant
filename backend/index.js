@@ -197,7 +197,7 @@ rest.post('/restaurant/:id/order', (req, res) => {
                                     dest_iban: feature_owner.iban,
                                     amount: price.toFixed(2)
                                 }
-                                conn.getIban(transfer_data, (err, feature_transfer) => {
+                                conn.transfer(transfer_data, (err, feature_transfer) => {
                                     if (err) {
                                         res.status(400).send({'error': err})
                                     } else {
@@ -218,7 +218,7 @@ rest.post('/restaurant/:id/order', (req, res) => {
                                                 res.send({status: 'ok', price: price})
                                             })
                                         } else {
-                                            res.status(400).send({'error': 'Money transfer failed on the banks side.', 'answer': feature_transfer})
+                                            res.status(400).send({'error': 'Money transfer failed on the banks side.'})
                                         }
                                     }
                                 })
@@ -243,7 +243,7 @@ rest.post('/restaurant/:id/reservate', (req, res) => {
                         occupied = false
                         for (var reservation of table.reservations) {
                             if (reservation.date != req.body.date) {
-
+                                
                             }
                         }
                     }
