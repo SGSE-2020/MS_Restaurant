@@ -13,7 +13,7 @@ const DB_URL = 'mongodb://localhost'
 const DB_RESTAURANTS = 'restaurants'
 
 const USER_PROTO = path.resolve(__dirname, './proto/user.proto')
-const PACKAGE_DEFINITION = protoLoader.loadSync(
+const USER_PACKAGE_DEFINITION = protoLoader.loadSync(
     USER_PROTO,
     {
         keepCase: true,
@@ -24,8 +24,23 @@ const PACKAGE_DEFINITION = protoLoader.loadSync(
     }
 )
 
-const PCKG_DEF_OBJ = grpc_module.loadPackageDefinition(PACKAGE_DEFINITION)
-const user_route = PCKG_DEF_OBJ.user
+const USR_PCKG_DEF_OBJ = grpc_module.loadPackageDefinition(USER_PACKAGE_DEFINITION)
+const user_route = USR_PCKG_DEF_OBJ.user
+
+const BANK_PROTO = path.resolve(__dirname, './proto/account.proto')
+const BANK_PACKAGE_DEFINITION = protoLoader.loadSync(
+    BANK_PROTO,
+    {
+        keepCase: true,
+        longs: String,
+        enums: String,
+        defaults: true,
+        oneofs: true
+    }
+)
+
+const BANK_PCKG_DEF_OBJ = grpc_module.loadPackageDefinition(BANK_PACKAGE_DEFINITION)
+const account_route = BANK_PCKG_DEF_OBJ.account
 
 const grpc = new mali(path.resolve(__dirname, './proto/restaurants.proto'), 'AppointmentCollision')
 const rest = express()
@@ -44,6 +59,13 @@ function mongo_connect(res, callback) {
     })
 }
 
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 rest.use(cookieParser())
 
 rest.use(express.json())
@@ -51,6 +73,7 @@ rest.use(express.json())
 rest.use((req, res, next) => {
     if (req.hostname == 'localhost') {
         res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', '*')
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     }
     next()
@@ -61,6 +84,9 @@ rest.use('/restaurant', (req, res, next) => {
         res.status(400).send({'error': 'uid cookie not allowed'})
     } else {
         if (req.originalUrl.endsWith('/menu') || req.originalUrl.split('/').length == 3) {
+            next()
+        } else if (req.hostname == 'localhost') {
+            req.cookies.uid = "TBOsX50VgedWgaAtNUc1Ic1CXGH2"
             next()
         } else {
             user_token = {
@@ -83,8 +109,12 @@ rest.use('/restaurant', (req, res, next) => {
     }
 })
 
-rest.use('/my_restaurant', (req, res, next) => {
-    next()
+rest.use('/restaurant/admin', (req, res, next) => {
+    if (res.cookies && res.cookies.restaurant_id) {
+        res.status(400).send({'error': 'restaurant_id cookie not allowed'})
+    } else {
+        next()
+    }
 })
 
 rest.get('/restaurants', (req, res) => {
@@ -127,11 +157,74 @@ rest.get('/restaurant/:id/menu', (req, res) => {
     })
 })
 
-rest.put('/restaurant/:id/order', (req, res) => {
-// https://docs.mongodb.com/manual/reference/operator/update/push/
+rest.post('/restaurant/:id/order', (req, res) => {
+    // https://docs.mongodb.com/manual/reference/operator/update/push/
+    let price = 0
+    for (var dish of req.body.orders) {
+        price += dish.price
+    }
+    conn = new account_route.AccountService('ms-bank:50051', grpc_module.credentials.createInsecure())
+    user_id = {
+        user_id: req.cookies.uid
+    }
+    conn.getIban(user_id, (err, feature) => {
+        if (err) {
+            res.status(401).send({'error': err})
+        } else {
+            mongo_connect(res, (err, db) => {
+                db.collection('restaurants').findOne({restaurantID: req.params.id}, (err, result) => {
+                    if (err || result == null) {
+                        res.status(404).send({'error': 'Restaurant with id ' + req.params.id + ' not found'})
+                    } else {
+                        owner_id = {
+                            user_id: result.owner
+                        }
+                        conn.getIban(owner_id, (err, feature_owner) => {
+                            if (err) {
+                                res.status(401).send({'error': err})
+                            } else {
+                                transfer_data = {
+                                    user_id = req.params.id,
+                                    iban = feature.iban,
+                                    purpose = 'Bezahlung der Restaurantbestellung',
+                                    dest_iban = feature_owner.iban,
+                                    amount = price.toFixed(2)
+                                }
+                                conn.getIban(transfer_data, (err, feature_transfer) => {
+                                    if (err) {
+                                        res.status(401).send({'error': err})
+                                    } else {
+                                        if (feature_transfer.status == '200') {
+                                            order_data = req.body
+                                            order_data.id = uuidv4()
+                                            mongo_connect(res, (err, db) => {
+                                                db.collection('restaurants').updateOne(
+                                                    {
+                                                        restaurantID: req.params.id
+                                                    },
+                                                    {
+                                                        $addToSet: {
+                                                            'orders': order_data
+                                                        }
+                                                    }
+                                                )
+                                            })
+                                        } else {
+                                            res.status(401).send({'error': 'Money transfer failed on the banks side.'})
+                                        }
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            })
+        }
+    })
+    res.send({"price": price})
 })
 
-rest.put('/restaurant/:id/reserve_table', (req, res) => {
+rest.post('/restaurant/:id/reserve_table', (req, res) => {
 
 })
 
@@ -139,45 +232,46 @@ rest.get('/restaurant/:id/test', (req, res) => {
     res.send({'check': req.cookies.uid})
 })
 
-rest.put('/restaurant/create', (req, res) => {
+rest.post('/restaurant/create', (req, res) => {
 
 })
 
-rest.post('/my_restaurant/update', (req, res) => {
+rest.put('/restaurant/admin/update', (req, res) => {
 
 })
 
-rest.put('/my_restaurant/menu/item', (req, res) => {
+rest.post('/restaurant/admin/menu/item', (req, res) => {
 
 })
 
-rest.post('/my_restaurant/menu/item', (req, res) => {
+rest.put('/restaurant/admin/menu/item', (req, res) => {
     
 })
 
-rest.delete('/my_restaurant/menu/item', (req, res) => {
+rest.delete('/restaurant/admin/menu/item', (req, res) => {
     
 })
 
-rest.get('/my_restaurant/orders', (req, res) => {
+rest.get('/restaurant/admin/orders', (req, res) => {
     
 })
 
-rest.post('/my_restaurant/order/:id/accept', (req, res) => {
+rest.put('/restaurant/admin/order/:id/accept', (req, res) => {
     
 })
 
-rest.post('/my_restaurant/order/:id/finish', (req, res) => {
+rest.put('/restaurant/admin/order/:id/finish', (req, res) => {
     
 })
 
-rest.put('/my_restaurant/publish_deal', (req, res) => {
+rest.post('/restaurant/admin/publish_deal', (req, res) => {
     
 })
 
 rest.get('/setupDB', (req, res) => {
     restaurant = {
         "restaurantID": "45f2xh-d46v421-2an3fz",
+        "owner": "TBOsX50VgedWgaAtNUc1Ic1CXGH2",
         "logo": "",
         "name": "Pizzeria Bolognese",
         "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est.",

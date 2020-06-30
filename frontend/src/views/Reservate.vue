@@ -18,14 +18,19 @@
                         <div class="field">
                             <label class="label">Zeitpunkt</label>
                             <div class="tile">
-                                <input class="input tile is-8" type="date">
-                                <input class="input tile is-4" type="time">
+                                <input class="input tile is-8" type="date" v-model="date">
+                                <input class="input tile is-4" type="time" v-model="time">
                             </div>
                         </div>
                         <div class="field">
                             <label class="label">Personenanzahl</label>
-                            <input class="input" type="number">
+                            <input class="input" type="number" v-model="person_count">
                         </div>
+                        <div class="note field">
+                            <label class="label">Anmerkung</label>
+                            <textarea class="textarea" rows="2" v-model="note"></textarea>
+                        </div>
+                        <p class="has-text-danger">{{ error_msg }}</p>
                         <b-button v-if="restaurant_info.reservationsAllowed" class="button button-green-bg margin-top-button level-right">Tisch reservieren</b-button>
                     </form>
                 </div>
@@ -39,13 +44,18 @@ import Header from '../components/Header.vue'
 import config from '../config.js'
 
 export default {
-    name: 'App',
+    name: 'Reservate',
     components: {
       Header
     },
     data() {
         return {
-            restaurant_info: null
+            restaurant_info: null,
+            note: "",
+            date: null,
+            time: null,
+            person_count: 0,
+            error_msg: ""
         }
     },
     created() {
