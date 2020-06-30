@@ -166,7 +166,6 @@ rest.get('/restaurant/:id/menu', (req, res) => {
 })
 
 rest.post('/restaurant/:id/order', (req, res) => {
-    // https://docs.mongodb.com/manual/reference/operator/update/push/
     let price = 0
     for (var dish of req.body.orders) {
         price += dish.price
@@ -189,7 +188,7 @@ rest.post('/restaurant/:id/order', (req, res) => {
                         }
                         conn.getIban(owner_id, (err, feature_owner) => {
                             if (err) {
-                                res.status(401).send({'error': err})
+                                res.status(400).send({'error': err})
                             } else {
                                 transfer_data = {
                                     user_id: req.params.id,
@@ -200,7 +199,7 @@ rest.post('/restaurant/:id/order', (req, res) => {
                                 }
                                 conn.getIban(transfer_data, (err, feature_transfer) => {
                                     if (err) {
-                                        res.status(401).send({'error': err})
+                                        res.status(400).send({'error': err})
                                     } else {
                                         if (feature_transfer.status == '200') {
                                             order_data = req.body
@@ -219,7 +218,7 @@ rest.post('/restaurant/:id/order', (req, res) => {
                                                 res.send({status: 'ok', price: price})
                                             })
                                         } else {
-                                            res.status(401).send({'error': 'Money transfer failed on the banks side.'})
+                                            res.status(400).send({'error': 'Money transfer failed on the banks side.', 'answer': feature_transfer})
                                         }
                                     }
                                 })
@@ -234,10 +233,24 @@ rest.post('/restaurant/:id/order', (req, res) => {
 
 rest.post('/restaurant/:id/reservate', (req, res) => {
     res.send({'status': 'ok'})
-})
+    mongo_connect(res, (err, db) => {
+        db.collection('restaurants').findOne({restaurantID: req.params.id}, (err, result) => {
+            if (err || result == null) {
+                res.status(404).send({'error': 'Restaurant with id ' + req.params.id + ' not found'})
+            } else {
+                for (var table of result.tables) {
+                    if (table.size == req.body.person_count) {
+                        occupied = false
+                        for (var reservation of table.reservations) {
+                            if (reservation.date != req.body.date) {
 
-rest.get('/restaurant/:id/test', (req, res) => {
-    res.send({'check': req.cookies.uid})
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    })
 })
 
 rest.post('/restaurant/create', (req, res) => {
