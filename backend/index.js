@@ -129,6 +129,14 @@ rest.get('/restaurants', (req, res) => {
     })
 })
 
+rest.get('/db', (req, res) => {
+    mongo_connect(res, (err, db) => {
+        db.collection(DB_RESTAURANTS).find({}).toArray((err, result) => {
+            res.send(result)
+        })
+    })
+})
+
 rest.get('/restaurant/:id', (req, res) => {
     mongo_connect(res, (err, db) => {
         db.collection('restaurants').findOne({restaurantID: req.params.id}, (err, result) => {
@@ -208,6 +216,7 @@ rest.post('/restaurant/:id/order', (req, res) => {
                                                         }
                                                     }
                                                 )
+                                                res.send({status: 'ok', price: price})
                                             })
                                         } else {
                                             res.status(401).send({'error': 'Money transfer failed on the banks side.'})
@@ -221,7 +230,6 @@ rest.post('/restaurant/:id/order', (req, res) => {
             })
         }
     })
-    res.send({"price": price})
 })
 
 rest.post('/restaurant/:id/reservate', (req, res) => {
