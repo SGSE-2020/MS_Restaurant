@@ -27,7 +27,7 @@
                             <input class="input" type="number" v-model="person_count">
                         </div>
                         <div class="field">
-                            <input type="checkbox" v-model="do_parking"> Parkplatz mitreservieren
+                            <input type="checkbox" v-model="reservate_parking"> Parkplatz mitreservieren
                         </div>
                         <div class="note field">
                             <label class="label">Anmerkung</label>
