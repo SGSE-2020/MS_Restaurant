@@ -245,7 +245,7 @@ rest.post('/restaurant/:id/order', (req, res) => {
                                 res.status(400).send({'error': err})
                             } else {
                                 transfer_data = {
-                                    user_id: req.params.id,
+                                    user_id: req.cookies.uid,
                                     iban: feature.iban,
                                     purpose: 'Bezahlung der Restaurantbestellung',
                                     dest_iban: feature_owner.iban,
@@ -273,7 +273,7 @@ rest.post('/restaurant/:id/order', (req, res) => {
                                                 res.send({status: 'ok', price: price})
                                             })
                                         } else {
-                                            res.status(400).send({'error': 'Money transfer failed on the banks side.', 'msg': feature_transfer, 'transfer_data': transfer_data})
+                                            res.status(400).send({'error': 'Money transfer failed on the banks side.', 'msg': feature_transfer, 'transfer_data': transfer_data, 'owner_data': owner_id})
                                         }
                                     }
                                 })
@@ -316,39 +316,56 @@ rest.post('/restaurant/:id/reservate', (req, res) => {
                         }
                     }
                     if (occupied < size_count) {
-                        reservation_request = {
-                            areaId: result.parking_id,
-                            userId: req.cookies.uid,
-                            startDateTime: (new Date(req.body.date + 'T' + req.body.time + ':00').getTime() - (2*60*60*1000)) / 1000,
-                            endDateTime: new Date(req.body.date + 'T' + req.body.time + ':00').getTime() / 1000 // Adding 2 hours
-                        }
-                        console.log(reservation_request)
-                        conn = new parking_route.Parkplatz('ms-parkplatz:50051', grpc_module.credentials.createInsecure())
-                        conn.reservation(reservation_request, (err, feature) => {
-                            if (err || !feature.reservationId || feature.reservationId == '') {
-                                if (err) {
-                                    res.status(400).send({'error': err})
-                                } else {
-                                    res.status(400).send({'error': feature})
-                                }
-                            } else {
-                                mongo_connect(res, (err, db) => {
-                                    new_reservation = req.body
-                                    new_reservation.id = uuidv4()
-                                    new_reservation.uid = req.cookies.uid
-                                    new_reservation.parkingID = feature.reservationId
-                                    db.collection(DB_RESTAURANTS).updateOne(
-                                        {
-                                            restaurantID: req.params.id
-                                        },
-                                        {
-                                            $addToSet:{'reservations': new_reservation}
-                                        }
-                                    )
-                                    res.send({'status': 'ok', 'request': reservation_request})
-                                })
+                        if (req.body.reservate_parking) {
+                            reservation_request = {
+                                areaId: result.parking_id,
+                                userId: req.cookies.uid,
+                                startDateTime: (new Date(req.body.date + 'T' + req.body.time + ':00').getTime() - (2*60*60*1000)) / 1000,
+                                endDateTime: new Date(req.body.date + 'T' + req.body.time + ':00').getTime() / 1000 // Adding 2 hours
                             }
-                        })
+                            conn = new parking_route.Parkplatz('ms-parkplatz:50051', grpc_module.credentials.createInsecure())
+                            conn.reservation(reservation_request, (err, feature) => {
+                                if (err || !feature.reservationId || feature.reservationId == '') {
+                                    if (err) {
+                                        res.status(400).send({'error': err})
+                                    } else {
+                                        res.status(400).send({'error': feature})
+                                    }
+                                } else {
+                                    mongo_connect(res, (err, db) => {
+                                        new_reservation = req.body
+                                        new_reservation.id = uuidv4()
+                                        new_reservation.uid = req.cookies.uid
+                                        new_reservation.parkingID = feature.reservationId
+                                        db.collection(DB_RESTAURANTS).updateOne(
+                                            {
+                                                restaurantID: req.params.id
+                                            },
+                                            {
+                                                $addToSet:{'reservations': new_reservation}
+                                            }
+                                        )
+                                        res.send({'status': 'ok'})
+                                    })
+                                }
+                            })
+                        } else {
+                            mongo_connect(res, (err, db) => {
+                                new_reservation = req.body
+                                new_reservation.id = uuidv4()
+                                new_reservation.uid = req.cookies.uid
+                                new_reservation.parkingID = ""
+                                db.collection(DB_RESTAURANTS).updateOne(
+                                    {
+                                        restaurantID: req.params.id
+                                    },
+                                    {
+                                        $addToSet:{'reservations': new_reservation}
+                                    }
+                                )
+                                res.send({'status': 'ok'})
+                            })
+                        }
                     } else {
                         res.send({'error': 'Alle möglichen Tische sind bereits belegt'})
                     }
