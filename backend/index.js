@@ -320,7 +320,7 @@ rest.post('/restaurant/:id/reservate', (req, res) => {
                             areaId: result.parking_id,
                             userId: req.cookies.uid,
                             startDateTime: new Date(req.body.date + 'T' + req.body.time + ':00').getTime() / 1000,
-                            endDateTime: (new Date(req.body.date + 'T' + req.body.time + ':00').getTime() + (2*60*60*1000)) * 1000 // Adding 2 hours
+                            endDateTime: (new Date(req.body.date + 'T' + req.body.time + ':00').getTime() + (2*60*60*1000)) / 1000 // Adding 2 hours
                         }
                         console.log(reservation_request)
                         conn = new parking_route.Parkplatz('ms-parkplatz:50051', grpc_module.credentials.createInsecure())
