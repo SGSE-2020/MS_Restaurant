@@ -411,7 +411,7 @@ rest.post('/restaurant/admin/publish_deal', (req, res) => {
 rest.get('/setupDB', (req, res) => {
     restaurant = {
         "restaurantID": "45f2xh-d46v421-2an3fz",
-        "owner": "TBOsX50VgedWgaAtNUc1Ic1CXGH2",
+        "owner": "TBOsX5OVgedWgaAtNUc1Ic1CXGH2",
         "logo": "",
         "name": "Pizzeria Bolognese",
         "parking_id": "4cf079cd-907a-4885-ada7-314d4fa19945",
