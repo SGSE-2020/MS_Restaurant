@@ -324,8 +324,12 @@ rest.post('/restaurant/:id/reservate', (req, res) => {
                         }
                         conn = new parking_route.Parkplatz('ms-parkplatz:50051', grpc_module.credentials.createInsecure())
                         conn.reservation(reservation_request, (err, feature) => {
-                            if (err || !feature.reservationId) {
-                                res.status(400).send({'error': err})
+                            if (err || !feature.reservationId || feature.reservationId == '') {
+                                if (erro) {
+                                    res.status(400).send({'error': err})
+                                } else {
+                                    res.status(400).send({'error': feature})
+                                }
                             } else {
                                 mongo_connect(res, (err, db) => {
                                     new_reservation = req.body
