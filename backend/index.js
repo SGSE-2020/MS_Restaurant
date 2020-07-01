@@ -344,7 +344,7 @@ rest.post('/restaurant/:id/reservate', (req, res) => {
                                             $addToSet:{'reservations': new_reservation}
                                         }
                                     )
-                                    res.send({'status': 'ok'})
+                                    res.send({'status': 'ok', 'request': 'reservation_request'})
                                 })
                             }
                         })
