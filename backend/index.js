@@ -226,7 +226,7 @@ rest.post('/restaurant/:id/order', (req, res) => {
     }
     conn = new account_route.AccountService('ms-bank:50051', grpc_module.credentials.createInsecure())
     user_id = {
-        user_id: req.cookies.uid
+        userId: req.cookies.uid
     }
     conn.getIban(user_id, (err, feature) => {
         if (err) {
@@ -238,17 +238,17 @@ rest.post('/restaurant/:id/order', (req, res) => {
                         res.status(404).send({'error': 'Restaurant with id ' + req.params.id + ' not found'})
                     } else {
                         owner_id = {
-                            user_id: result.owner
+                            userId: result.owner
                         }
                         conn.getIban(owner_id, (err, feature_owner) => {
                             if (err) {
                                 res.status(400).send({'error': err})
                             } else {
                                 transfer_data = {
-                                    user_id: req.cookies.uid,
+                                    userId: req.cookies.uid,
                                     iban: feature.iban,
                                     purpose: 'Bezahlung der Restaurantbestellung',
-                                    dest_iban: feature_owner.iban,
+                                    destIban: feature_owner.iban,
                                     amount: price.toFixed(2)
                                 }
                                 conn.transfer(transfer_data, (err, feature_transfer) => {
