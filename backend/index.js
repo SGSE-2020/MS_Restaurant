@@ -273,7 +273,7 @@ rest.post('/restaurant/:id/order', (req, res) => {
                                                 res.send({status: 'ok', price: price})
                                             })
                                         } else {
-                                            res.status(400).send({'error': 'Money transfer failed on the banks side.', 'msg': feature_transfer})
+                                            res.status(400).send({'error': 'Money transfer failed on the banks side.', 'msg': feature_transfer, 'transfer_data': transfer_data})
                                         }
                                     }
                                 })
