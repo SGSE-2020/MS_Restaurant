@@ -141,7 +141,7 @@ export default {
             }).then(response => response.json()).then((json) => {
                 if (json.error) {
                     console.log(json.error)
-                    this.error_msg = "Es ist ein Fehler bei der Reservierung aufgetreten."
+                    this.error_msg = "Es ist ein Fehler bei der Bestellung aufgetreten."
                 } else {
                     router.push({'name': 'restaurant', query: {restaurant_id: this.$route.query.restaurant_id, order: true}})
                 }
