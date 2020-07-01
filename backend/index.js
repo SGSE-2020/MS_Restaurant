@@ -319,13 +319,14 @@ rest.post('/restaurant/:id/reservate', (req, res) => {
                         reservation_request = {
                             areaId: result.parking_id,
                             userId: req.cookies.uid,
-                            startDateTime: new Date(req.body.date + 'T' + req.body.time + ':00').getTime(),
-                            endDateTime: new Date(req.body.date + 'T' + req.body.time + ':00').getTime() + (2*60*60*1000) // Adding 2 hours
+                            startDateTime: new Date(req.body.date + 'T' + req.body.time + ':00').getTime() / 1000,
+                            endDateTime: (new Date(req.body.date + 'T' + req.body.time + ':00').getTime() + (2*60*60*1000)) * 1000 // Adding 2 hours
                         }
+                        console.log(reservation_request)
                         conn = new parking_route.Parkplatz('ms-parkplatz:50051', grpc_module.credentials.createInsecure())
                         conn.reservation(reservation_request, (err, feature) => {
                             if (err || !feature.reservationId || feature.reservationId == '') {
-                                if (erro) {
+                                if (err) {
                                     res.status(400).send({'error': err})
                                 } else {
                                     res.status(400).send({'error': feature})
