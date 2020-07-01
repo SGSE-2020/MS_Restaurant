@@ -603,6 +603,18 @@ rest.get('/setupDB', (req, res) => {
     })
 })
 
+rest.post('/addtodb', (req, res) => {
+    mongo_connect(res, (err, db) => {
+        db.collection(DB_RESTAURANTS).insertOne(req.body, (err, db_res) => {
+            if (err) {
+                res.status(500).send({'error': err})
+            } else {
+                res.send()
+            }
+        })
+    })
+})
+
 rest.get('/health', (req, res) => {
     res.send({'health': 'ok'})
 })
