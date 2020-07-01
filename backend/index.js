@@ -42,6 +42,21 @@ const BANK_PACKAGE_DEFINITION = protoLoader.loadSync(
 const BANK_PCKG_DEF_OBJ = grpc_module.loadPackageDefinition(BANK_PACKAGE_DEFINITION)
 const account_route = BANK_PCKG_DEF_OBJ.account
 
+const PARKING_PROTO = path.resolve(__dirname, './proto/parkplatz.proto')
+const PARKING_PACKAGE_DEFINITION = protoLoader.loadSync(
+    PARKING_PROTO,
+    {
+        keepCase: true,
+        longs: String,
+        enums: String,
+        defaults: true,
+        oneofs: true
+    }
+)
+
+const PARKING_PCKG_DEF_OBJ = grpc_module.loadPackageDefinition(PARKING_PACKAGE_DEFINITION)
+const parking_route = PARKING_PCKG_DEF_OBJ.parkplatz
+
 const grpc = new mali(path.resolve(__dirname, './proto/restaurants.proto'), 'AppointmentCollision')
 const rest = express()
 const mongo_client = mongo.MongoClient;
@@ -272,52 +287,70 @@ rest.post('/restaurant/:id/order', (req, res) => {
 })
 
 rest.post('/restaurant/:id/reservate', (req, res) => {
-    mongo_connect(res, (err, db) => {
-        db.collection(DB_RESTAURANTS).findOne({restaurantID: req.params.id}, (err, result) => {
-            if (err || result == null) {
-                res.status(404).send({'error': 'Restaurant with id ' + req.params.id + ' does not have a table with size ' + req.body.person_count})
-            } else {
-                var size_count = 0
-                for (var table of result.tables) {
-                    if (table.size >= req.body.person_count) {
-                        size_count += table.count
+    console.log(req.body)
+    if (req.body.person_count <= 0 || !req.body.date || req.body.date == '' || !req.body.time || !req.body.time.includes(':')) {
+        res.status(400).send({'error': 'Invalid information'})
+    } else {
+        mongo_connect(res, (err, db) => {
+            db.collection(DB_RESTAURANTS).findOne({restaurantID: req.params.id}, (err, result) => {
+                if (err || result == null) {
+                    res.status(404).send({'error': 'Restaurant with id ' + req.params.id + ' does not have a table with size ' + req.body.person_count})
+                } else {
+                    var size_count = 0
+                    for (var table of result.tables) {
+                        if (table.size >= req.body.person_count) {
+                            size_count += table.count
+                        }
                     }
-                }
-                var occupied = 0
-                for (var reservation of result.reservations) {
-                    if (reservation.person_count >= req.body.person_count) {
-                        if (reservation.date == req.body.date) {
-                            var hour = req.body.time.split(':')[0]
-                            if (reservation.time.startsWith(hour)
-                            || reservation.time.startsWith((parseInt(hour) + 1).toString())
-                            || reservation.time.startsWith((parseInt(hour) + 2).toString())) {
-                                occupied += 1
+                    var occupied = 0
+                    for (var reservation of result.reservations) {
+                        if (reservation.person_count >= req.body.person_count) {
+                            if (reservation.date == req.body.date) {
+                                var hour = req.body.time.split(':')[0]
+                                if (reservation.time.startsWith(hour)
+                                || reservation.time.startsWith((parseInt(hour) + 1).toString())
+                                || reservation.time.startsWith((parseInt(hour) + 2).toString())) {
+                                    occupied += 1
+                                }
                             }
                         }
                     }
-                }
-                if (occupied < size_count) {
-                    inserted = true
-                    mongo_connect(res, (err, db) => {
-                        new_reservation = req.body
-                        new_reservation.id = uuidv4()
-                        new_reservation.uid = req.cookies.uid
-                        db.collection(DB_RESTAURANTS).updateOne(
-                            {
-                                restaurantID: req.params.id
-                            },
-                            {
-                                $addToSet:{'reservations': new_reservation}
+                    if (occupied < size_count) {
+                        reservation_request = {
+                            areaId: result.parking_id,
+                            userId: req.cookies.uid,
+                            startDateTime: new Date(req.body.date + 'T' + req.body.time + ':00').getTime(),
+                            endDateTime: new Date(req.body.date + 'T' + req.body.time + ':00').getTime() + (2*60*60*1000) // Adding 2 hours
+                        }
+                        conn = new parking_route.Parkplatz('ms-parkplatz:50051', grpc_module.credentials.createInsecure())
+                        conn.reservation(reservation_request, (err, feature) => {
+                            if (err || !feature.reservationId) {
+                                res.status(400).send({'error': err})
+                            } else {
+                                mongo_connect(res, (err, db) => {
+                                    new_reservation = req.body
+                                    new_reservation.id = uuidv4()
+                                    new_reservation.uid = req.cookies.uid
+                                    new_reservation.parkingID = feature.reservationId
+                                    db.collection(DB_RESTAURANTS).updateOne(
+                                        {
+                                            restaurantID: req.params.id
+                                        },
+                                        {
+                                            $addToSet:{'reservations': new_reservation}
+                                        }
+                                    )
+                                    res.send({'status': 'ok'})
+                                })
                             }
-                        )
-                        res.send({'status': 'ok'})
-                    })
-                } else {
-                    res.send({'error': 'Alle möglichen Tische sind bereits belegt'})
+                        })
+                    } else {
+                        res.send({'error': 'Alle möglichen Tische sind bereits belegt'})
+                    }
                 }
-            }
+            })
         })
-    })
+    }
 })
 
 rest.get('/restaurants/isowner', (req, res) => {
@@ -376,6 +409,7 @@ rest.get('/setupDB', (req, res) => {
         "owner": "TBOsX50VgedWgaAtNUc1Ic1CXGH2",
         "logo": "",
         "name": "Pizzeria Bolognese",
+        "parking_id": "4cf079cd-907a-4885-ada7-314d4fa19945",
         "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est.",
         "ordersAllowed": true,
         "reservationsAllowed": true,

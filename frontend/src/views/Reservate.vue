@@ -26,6 +26,13 @@
                             <label class="label">Personenanzahl</label>
                             <input class="input" type="number" v-model="person_count">
                         </div>
+                        <div class="field">
+                            <input type="checkbox" v-model="do_parking"> Parkplatz mitreservieren
+                        </div>
+                        <div v-if="do_parking" class="field">
+                            <label class="label">Parkplatzanzahl</label>
+                            <input class="input" type="number" v-model="parking_spot_count">
+                        </div>
                         <div class="note field">
                             <label class="label">Anmerkung</label>
                             <textarea class="textarea" rows="2" v-model="note"></textarea>
@@ -56,7 +63,9 @@ export default {
             date: null,
             time: null,
             person_count: 0,
-            error_msg: ""
+            error_msg: "",
+            do_parking: false,
+            parking_spot_count: 0
         }
     },
     methods: {
@@ -65,7 +74,7 @@ export default {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',
-                credentials: 'include',
+                credentials: 'same-origin',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -76,7 +85,8 @@ export default {
                     note: this.note,
                     date: this.date,
                     time: this.time,
-                    person_count: this.person_count
+                    person_count: this.person_count,
+                    parking_spot_count: this.parking_spot_count
                 })
             }).then(response => response.json()).then((json) => {
                 if (json.error) {

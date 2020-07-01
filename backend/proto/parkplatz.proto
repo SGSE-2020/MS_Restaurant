@@ -1,0 +1,64 @@
+syntax = "proto3";
+package parkplatz;
+
+service Parkplatz {
+    rpc reservation (ReservationRequest) returns (ReservationDetails) {}
+    rpc termination (TerminationRequest) returns (ReservationDetails) {}
+
+    rpc utilization (UtilizationRequest) returns (stream UtilizationDetails) {}
+
+    rpc provision (AreaRequest) returns (AreaDetails) {}
+    rpc expulsion (ExpulsionRequest) returns (AreaDetails) {}
+}
+
+message ReservationRequest {
+    string areaId = 1;
+    string userId = 2;
+    int32 startDateTime = 3;
+    int32 endDateTime = 4;
+}
+
+message ReservationDetails {
+    string reservationId = 1;
+    string status = 2;
+}
+
+message TerminationRequest {
+    string reservationId = 1;
+}
+
+message AreaRequest {
+    string displayName = 1;
+    AreaDetails areaDetails = 3;
+}
+
+message AreaDetails {
+    string areaId = 1;
+    int32 totalSpots = 2;
+    bool food_drink = 3;
+    bool bar = 4;
+    bool fast_food = 5;
+    bool amenities = 6;
+    bool shopping = 7;
+    bool facilities = 8;
+    bool two_wheeler = 9;
+    bool hotel = 10;
+    bool grill = 11;
+    bool medical_aid = 12;
+    bool gas = 13;
+    bool charging = 14;
+}
+
+message ExpulsionRequest {
+    string areaId = 1;
+}
+
+message UtilizationRequest {
+    string serviceName = 1;
+}
+
+message UtilizationDetails {
+    string displayName = 1;
+    int32 totalSpots = 2;
+    int32 utilizedSpots = 3;
+}
