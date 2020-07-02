@@ -76,6 +76,7 @@ h2 {
     padding-top: 0px;
     padding-bottom: 16px;
     max-width: 33.333334%;
+    min-height: 490px;
 }
 
 .restaurant-card div {
