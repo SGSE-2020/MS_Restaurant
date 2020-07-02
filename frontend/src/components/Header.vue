@@ -9,15 +9,15 @@
                 <b-input class="column" type="email" placeholder="E-Mail" v-model="email"></b-input>
                 <b-input class="column" type="password" placeholder="Passwort" v-model="password"></b-input>
                 <b-button class="button-column button-green-bg" @click.prevent="loginUser()">Login</b-button>
-                <b-button v-if="user && isowner" class="button-column button-green-bg">Mein Restaurant</b-button>
-                <b-button v-if="user && !isowner" class="button-column button-green-bg">Restaurant erstellen</b-button>
+                <b-button v-if="!disabled && user && isowner" class="button-column button-green-bg">Mein Restaurant</b-button>
+                <b-button v-if="!disabled && user && !isowner" class="button-column button-green-bg">Restaurant erstellen</b-button>
                 <a class="link" href="http://portal.dvess.network">Zum Portal</a>
             </div>
             <div class="columns" v-if="user">
                 <p class="welcome-message column">Willkommen, {{username}}</p>
                 <b-button class="button-column button-green-bg" @click.prevent="logoutUser()">Logout</b-button>
-                <b-button v-if="user && isowner" class="button-column button-green-bg">Mein Restaurant</b-button>
-                <b-button v-if="user && !isowner" class="button-column button-green-bg">Restaurant erstellen</b-button>
+                <b-button v-if="!disabled && user && isowner" class="button-column button-green-bg">Mein Restaurant</b-button>
+                <b-button v-if="!disabled && user && !isowner" class="button-column button-green-bg">Restaurant erstellen</b-button>
                 <a class="link" href="http://portal.dvess.network">Zum Portal</a>
             </div>
         </div>
@@ -35,7 +35,8 @@ export default {
             email: null,
             password: null,
             username: null,
-            isowner: false
+            isowner: false,
+            disabled: true
         }
     },
     created() {
